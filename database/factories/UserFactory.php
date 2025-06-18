@@ -23,6 +23,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        /// FALTA CREAR FACTORY PARA DATOS DE PRUEBA.
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -30,6 +31,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+
     }
 
     /**
