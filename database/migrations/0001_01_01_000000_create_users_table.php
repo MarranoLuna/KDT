@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            /// adaptar a nuestro user y en el seeder crear user para mi, luna y eli.
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
