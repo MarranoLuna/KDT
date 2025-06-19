@@ -22,7 +22,6 @@ class UsersSeeder extends Seeder
                 'phone'=> '215474',
                 'birthday' =>'1997-08-15',
                 'email_verified_at' => now(),
-                'remember_token' => Str::random(10)
             ],
             [
                 'email' => 'elisaronconi28@gmail.com',
@@ -32,7 +31,6 @@ class UsersSeeder extends Seeder
                 'phone'=> '621245',
                 'birthday' =>'2000-07-15',
                 'email_verified_at' => now(),
-                'remember_token' => Str::random(10)
             ],
             [
                 'email' => 'lunamarrano2@gmail.com',
@@ -42,7 +40,6 @@ class UsersSeeder extends Seeder
                 'phone'=> '541881',
                 'birthday' =>'2003-04-26',
                 'email_verified_at' => now(),
-                'remember_token' => Str::random(10)
             ],
         ]);
     }
