@@ -13,6 +13,9 @@ class UsersSeeder extends Seeder
      */
     public function run(): void
     {
+        User::factory()->create();
+        /*
+        
         DB::table('users')->insert([
             [
                 'email' => 'fefogs@gmail.com',
@@ -42,5 +45,6 @@ class UsersSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         ]);
+        */
     }
 }
