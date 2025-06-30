@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             OrderStatusSeeder::class, 
             UsersSeeder::class,        
             VehicleTypeSeeder::class,   
+            //comentario
         ]);
     }
 }
