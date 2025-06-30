@@ -47,5 +47,7 @@ class UsersSeeder extends Seeder
             User::factory()->create($data);
         }
 
+        User::factory(20)->create();
+
     }
 }
