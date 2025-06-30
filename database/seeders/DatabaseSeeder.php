@@ -20,5 +20,9 @@ class DatabaseSeeder extends Seeder
             VehicleTypeSeeder::class,   
             //comentario
         ]);
+
+            UsersSeeder::Class, 
+            CouriersSeeder::Class
+        ]); 
     }
 }
