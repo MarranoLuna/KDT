@@ -16,8 +16,10 @@ class VehicleTypeFactory extends Factory
      */
     public function definition(): array
     {
+       
         return [
-            //
-        ];
+            'name' => 'auto',   //Corregir esto, no me deja seedear si no declaro 'name'.
+    ];
+        
     }
 }

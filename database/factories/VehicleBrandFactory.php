@@ -17,7 +17,21 @@ class VehicleBrandFactory extends Factory
     public function definition(): array
     {
         return [
-            //
-        ];
+        
+        'name' => $this->faker->randomElement([
+           'Gilera',
+            'Motomel',
+            'Brava',
+            'Honda',
+            'Yamaha',
+            'Zanella',
+            'Suzuki',
+            'Beta',
+            'Corven',
+            'Guerrero',
+            'Mondial',
+        ]),
+    ];
+
     }
 }
