@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             CouriersSeeder::class,
             VehicleBrandSeeder::class, 
             OrderStatusSeeder::class,       
-            VehicleTypeSeeder::class,   
+            AddressSeeder::class,   
+            RequestStatusesSeeder::class,   
             //comentario
         ]);
 
