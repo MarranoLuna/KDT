@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             VehicleBrandSeeder::class, 
             OrderStatusSeeder::class,       
             VehicleTypeSeeder::class,   
+            VehicleSeeder::class,
             //comentario
         ]);
 
