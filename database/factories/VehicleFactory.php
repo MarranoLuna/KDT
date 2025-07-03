@@ -29,10 +29,13 @@ class VehicleFactory extends Factory
             'registration_plate' => strtoupper($this->faker->bothify('??###??')),
             'permission' => $this->faker->randomElement(['Nacional', 'Provincial']),
             'is_validated' => $this->faker->boolean(),
-            'vehicle_type_id' => VehicleType::factory(),
-            'vehicle_brand_id' => VehicleBrand::factory(),
-            'courier_id' => Courier::factory(),
+            'vehicle_type_id' => VehicleType::inRandomOrder()->first()->id,
+            'vehicle_brand_id' => VehicleBrand::inRandomOrder()->first()->id,
+            'courier_id' => Courier::inRandomOrder()->first()->id,
         ];
+
+        
+
     }
 
     public function withFaker()
