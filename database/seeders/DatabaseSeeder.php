@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             RequestStatusesSeeder::class,   
             VehicleTypeSeeder::class,   
             RequestSeeder::class, 
+            VehicleSeeder::class,   
             //comentario
         ]);
 
