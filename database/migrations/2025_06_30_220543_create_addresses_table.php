@@ -17,13 +17,11 @@ return new class extends Migration
         $table->string('number', 30);
         $table->string('intersection', 30);
         $table->char('floor', 1);
-        $table->string('department', 3);
+        $table->string('department', 3)->nullable();
         $table->unsignedBigInteger('user_id');
         // Clave foránea
         $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
-
-        $table->timestamps();
+         $table->timestamps();
     });
 
     }
