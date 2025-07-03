@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             AddressSeeder::class,   
             RequestStatusesSeeder::class,   
             VehicleTypeSeeder::class,   
+            RequestSeeder::class, 
             VehicleSeeder::class,   
             //comentario
         ]);
