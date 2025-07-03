@@ -4,20 +4,20 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\RequestStatuses; 
+use App\Models\RequestStatus; 
 
 class RequestStatusesSeeder extends Seeder
 {
     
         public function run(): void
     {
-        RequestStatuses::create([
+        RequestStatus::create([
             'name' =>'solicitada',
         ]);
-        RequestStatuses::create([
+        RequestStatus::create([
             'name' =>'ofertada',
         ]);
-        RequestStatuses::create([
+        RequestStatus::create([
             'name' =>'aceptada',
         ]);
     }
