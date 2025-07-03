@@ -19,7 +19,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom right, #e9f5ee, #ffffff);
+            background: linear-gradient(to bottom right, #e9f5ee,rgb(240, 233, 146));
             color: var(--text-color);
             display: flex;
             flex-direction: column;
@@ -69,12 +69,12 @@
 <body>
     <header>
         <h1>¡Bienvenido!</h1>
-        <p>Esta es la página de inicio . 🎉</p></BR> </BR>
-        <a href="{{ url('/dashboard') }}" class="btn">Ir al Panel</a>
+        <p>Esta es la página de inicio de KDT . 🎉</p></BR> </BR>
+        <a href="{{ url('/dashboard') }}" class="btn">Iniciar sesión</a>
     </header>
 
     <footer>
-        Desarrollado con ❤️ 
+        Desarrollado con ❤️ FEDE LUNA ELI
     </footer>
 </body>
 </html>
