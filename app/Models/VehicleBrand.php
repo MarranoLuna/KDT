@@ -10,9 +10,9 @@ class VehicleBrand extends Model
 {
     /** @use HasFactory<\Database\Factories\VehicleBrandFactory> */
     use HasFactory;
-    /** Relacion un vehiculo una marca */
+ 
     public function vehicle()
     {
-        return $this->hasOne('App\Vehicle');
+        return $this->hasMany(Vehicle::class);
     }
 }
