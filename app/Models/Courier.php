@@ -14,7 +14,7 @@ class Courier extends Model
         'status',
         'start_date',
         'dni',
-        'id_validated',
+        'is_validated',
         'balance'
     ];
     

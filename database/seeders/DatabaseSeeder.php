@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             VehicleTypeSeeder::class,   
             RequestSeeder::class, 
             VehicleSeeder::class,   
+            OfferSeeder::class, 
             //comentario
         ]);
 
