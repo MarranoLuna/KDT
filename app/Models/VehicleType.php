@@ -13,6 +13,6 @@ class VehicleType extends Model
      /** Relacion un vehiculo un tipo */
     public function vehicle()
     {
-        return $this->hasOne('App\Vehicle');
+        return $this->hasMany(Vehicle::class);
     }
 }

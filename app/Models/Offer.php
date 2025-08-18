@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Offer extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'price',
+        'courier_id',
+        'request_id',
+    ];
+
+    // Relación con Courier
+    public function courier()
+    {
+        return $this->belongsTo(Courier::class);
+    }
+
+    // Relación con Request
+    public function request()
+    {
+        return $this->belongsTo(Request::class);
+    }
+
+    // Relación con Order (1 oferta puede estar en 1 pedido)
+    public function order()
+    {
+        return $this->hasOne(Order::class);
+    }
+}
