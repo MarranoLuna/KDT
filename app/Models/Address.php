@@ -22,4 +22,13 @@ class Address extends Model
     {
         return $this->belongsTo('App\User');
     }
+    /**Una direccion puede ser origen o destino de muchas requests */
+    public function requestsAsOrigin()
+    {
+        return $this->hasMany(Request::class,'origin_adress_id');
+    }
+    public function requestsAsDestination()
+    {
+        return $this->hasMany(Request::class,'destination_address_id');
+    }
 }

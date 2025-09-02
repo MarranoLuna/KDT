@@ -22,4 +22,25 @@ class Vehicle extends Model
     {
         return $this->hasOne('App\VehicleType');
     }
+
+    public function documents()
+    {
+    return $this->hasMany(VehicleDoc::class);
+    }
+
+    public function brand()
+    {
+    return $this->belongsTo(VehicleBrand::class,'vehicle_brand_id');
+    }
+
+    public function type()
+    {
+    return $this->belongsTo(VehicleType::class,'vehicle_type_id');
+    }
+
+    public function courier()
+    {
+    return $this->hasOne(Courier::class);
+    }
+    
 }

@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class RequestStatus extends Model
 {
      use HasFactory;
+
+      public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
 }

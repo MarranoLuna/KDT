@@ -49,9 +49,23 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    /** Relacion un usuario a muchas direcciones */
+    /** Relaciones*/
     public function address()
     {
         return $this->hasMany('App\Address');
+    }
+    public function admin()
+    {
+    return $this->hasOne(Admin::class);
+    }
+
+     public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+
+     public function courier()
+    {
+        return $this->hasOne(Courier::class);
     }
 }

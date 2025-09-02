@@ -12,6 +12,8 @@ class Courier extends Model
 
     protected $fillable = [
         'status',
+        'user_id',
+        'vehicle_id',
         'start_date',
         'dni',
         'is_validated',
@@ -21,5 +23,20 @@ class Courier extends Model
     protected $casts = [
         'start_date' => 'date',
     ];
+
+    public function offers()
+    {
+    return $this->hasMany(Offer::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
 
 }
