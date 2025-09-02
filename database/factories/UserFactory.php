@@ -29,7 +29,6 @@ class UserFactory extends Factory
             'firstname' => fake('es_AR')->firstname(),
             'lastname' => fake('es_AR')->lastname(),
             'password' => "1234",
-            'phone'=> '123456',
             'birthday'=> fake()->dateTimeBetween('-40 years', '-17 years')->format('Y-m-d'),
             'email_verified_at' => now(),
             'remember_token' => Str::random(10), 
