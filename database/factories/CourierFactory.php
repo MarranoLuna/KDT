@@ -27,7 +27,8 @@ class CourierFactory extends Factory
             'dni' => $dni,
             'is_validated' => fake()->boolean(70),
             'balance'=> fake()->randomFloat(2,0,50000),
-            'user_id'=>fake()->numberBetween(4, 10)
+            'user_id'=>fake()->numberBetween(4, 10),
+            'area' => fake()->numberBetween(4, 10),
         ];
     }
 }
