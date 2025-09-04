@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Request;
-use Illuminate\Http\Request;
 
 class RequestController extends Controller
 {
@@ -26,7 +24,7 @@ class RequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store()
     {
         //
     }
@@ -34,7 +32,7 @@ class RequestController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show()
     {
         //
     }
@@ -42,7 +40,7 @@ class RequestController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request)
+    public function edit()
     {
         //
     }
@@ -50,7 +48,7 @@ class RequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Request $request)
+    public function update()
     {
         //
     }
@@ -58,7 +56,7 @@ class RequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy()
     {
         //
     }
