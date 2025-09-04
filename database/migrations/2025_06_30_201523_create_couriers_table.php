@@ -19,6 +19,8 @@ return new class extends Migration
             $table->boolean("is_validated");
             $table->decimal("balance", 9, 2)->default(0.00);
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
+        
+            $table->decimal('area')->nullable(); 
             $table->timestamps();
         });
     }
