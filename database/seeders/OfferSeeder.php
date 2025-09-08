@@ -18,11 +18,9 @@ class OfferSeeder extends Seeder
 
         for ($i = 1; $i<=20; $i++) {
             array_push($requests, ["request_id"=>$i]);
-        }
+        };
 
+        Offer::factory(40)->create();
 
-        foreach ($requests as $oferta) {
-            Offer::factory()->create($oferta);
-        }
     }
 }

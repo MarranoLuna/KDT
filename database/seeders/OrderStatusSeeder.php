@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\OrderStatus;
+use Illuminate\Support\Facades\DB;
 
 class OrderStatusSeeder extends Seeder
 {
@@ -13,11 +13,10 @@ class OrderStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        OrderStatus::create([
-            'name' => 'En proceso',
-        ]);
-        OrderStatus::create([
-            'name' => 'Finalizada',
+        DB::table('order_statuses')->insert([
+            ['name' => 'en Proceso'],
+            ['name' => 'Completada'],
+            ['name' => 'Cancelada'],
         ]);
     }
 }
