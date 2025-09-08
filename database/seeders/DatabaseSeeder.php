@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             RequestSeeder::class, 
             VehicleSeeder::class,   
             OfferSeeder::class, 
+            //OrderSeeder::class
             //comentario
         ]);
 
