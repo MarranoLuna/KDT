@@ -23,12 +23,8 @@ class DatabaseSeeder extends Seeder
             RequestSeeder::class, 
             VehicleSeeder::class,   
             OfferSeeder::class, 
-<<<<<<< Updated upstream
-            //OrderSeeder::class
-=======
             OrderStatusSeeder::class,
             OrdersSeeder::class,
->>>>>>> Stashed changes
             //comentario
         ]);
 
