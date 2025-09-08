@@ -17,7 +17,7 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validación (aquí ya tienes el código que validará los campos)
+        //Validación 
         $request->validate([
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
@@ -26,7 +26,7 @@ class RegisteredUserController extends Controller
             'birthday' => ['required', 'date', 'before:-18 years'],
         ]);
 
-        // 2. Creación del usuario
+        //Creación del usuario
         $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
@@ -35,11 +35,12 @@ class RegisteredUserController extends Controller
             'birthday' => $request->birthday,
         ]);
         
-        // 3. Devolver una respuesta JSON (esto es lo más importante)
+        //Devolver una respuesta JSON
         return response()->json([
-            'message' => 'User registered successfully!',
+            'message' => 'Usuario registrado',
             'user' => $user
-        ], 201); // El código 201 Created es el estándar para un registro exitoso.
+        ]); 
+        
     }
 }
 
