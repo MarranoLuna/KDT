@@ -34,4 +34,9 @@ class Address extends Model
     {
         return $this->hasMany(Request::class,'destination_address_id');
     }
+    public function requests()
+    {
+    return $this->hasMany(Request::class);
+    }
+
 }

@@ -12,39 +12,60 @@ class RequestController extends Controller
     {
         // Validación
         $validated = $request->validate([
-            'origin'         => 'required|string|max:255',
-            'destination'    => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'payment_method' => 'required|string|in:efectivo,mercadoPago,transferencia',
-            'stop'           => 'nullable|string|max:255',
-            'amount'         => 'nullable|numeric'
+            'origin_street'      => 'required|string|max:255',
+            'origin_number'      => 'required|string|max:30',
+            'destination_street' => 'required|string|max:255',
+            'destination_number' => 'required|string|max:30',
+            'description'        => 'nullable|string',
+            'payment_method'     => 'required|string|in:efectivo,mercadoPago,transferencia',
+            'stop_street'        => 'nullable|string|max:255',
+            'stop_number'        => 'nullable|string|max:30',
+            'intersection'       => 'nullable|string|max:30',
+            'floor'              => 'nullable|string|max:1',
+            'department'         => 'nullable|string|max:3',
+            'amount'             => 'nullable|numeric'
         ]);
 
-        // Crear direcciones automáticamente
+     
         $origin = Address::create([
-            'address' => $validated['origin']
+            'street'      => $validated['origin_street'],
+            'number'      => $validated['origin_number'],
+            'intersection'=> $validated['intersection'] ?? null,
+            'floor'       => $validated['floor'] ?? null,
+            'department'  => $validated['department'] ?? null,
+            'user_id'     => auth()->id() ?? 1 // ⚠️ reemplazar por auth real
         ]);
 
+      
         $destination = Address::create([
-            'address' => $validated['destination']
+            'street'      => $validated['destination_street'],
+            'number'      => $validated['destination_number'],
+            'intersection'=> $validated['intersection'] ?? null,
+            'floor'       => $validated['floor'] ?? null,
+            'department'  => $validated['department'] ?? null,
+            'user_id'     => auth()->id() ?? 1
         ]);
 
-        // (Opcional) si hay parada intermedia
         $stop = null;
-        if (!empty($validated['stop'])) {
+        if (!empty($validated['stop_street']) && !empty($validated['stop_number'])) {
             $stop = Address::create([
-                'address' => $validated['stop']
+                'street'      => $validated['stop_street'],
+                'number'      => $validated['stop_number'],
+                'intersection'=> $validated['intersection'] ?? null,
+                'floor'       => $validated['floor'] ?? null,
+                'department'  => $validated['department'] ?? null,
+                'user_id'     => auth()->id() ?? 1
             ]);
         }
 
-        // Crear la solicitud
         $newRequest = Request::create([
-            'description'          => $validated['description'] ?? '',
-            'payment_method'       => $validated['payment_method'],
-            'user_id'              => 1,
-            'origin_address_id'    => $origin->id,
+            'description'            => $validated['description'] ?? '',
+            'payment_method'         => $validated['payment_method'],
+            'user_id'                => auth()->id() ?? 1,
+            'origin_address_id'      => $origin->id,
             'destination_address_id' => $destination->id,
-            'request_status_id'    => 1, // "Solicitada"
+            'stop_address_id'        => $stop?->id, // null si no existe
+            'request_status_id'      => 1, // "Solicitada"
         ]);
 
         return response()->json([
