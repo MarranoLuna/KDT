@@ -10,7 +10,14 @@ class Request extends Model
     /** @use HasFactory<\Database\Factories\RequestFactory> */
     use HasFactory;
 
-
+protected $fillable = [
+    'description',
+    'payment_method',
+    'user_id',
+    'origin_address_id',
+    'destination_address_id',
+    'request_status_id'
+];
     public function origin()
     {
         return $this->belongsTo(Adress::class, 'origin_address_id');

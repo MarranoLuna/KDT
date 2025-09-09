@@ -2,62 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Request;
+use App\Models\Address;
+use Illuminate\Http\Request as HttpRequest;
 
 class RequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function store(HttpRequest $request)
     {
-        //
-    }
+        // Validación
+        $validated = $request->validate([
+            'origin'         => 'required|string|max:255',
+            'destination'    => 'required|string|max:255',
+            'description'    => 'nullable|string',
+            'payment_method' => 'required|string|in:efectivo,mercadoPago,transferencia',
+            'stop'           => 'nullable|string|max:255',
+            'amount'         => 'nullable|numeric'
+        ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        // Crear direcciones automáticamente
+        $origin = Address::create([
+            'address' => $validated['origin']
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store()
-    {
-        //
-    }
+        $destination = Address::create([
+            'address' => $validated['destination']
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show()
-    {
-        //
-    }
+        // (Opcional) si hay parada intermedia
+        $stop = null;
+        if (!empty($validated['stop'])) {
+            $stop = Address::create([
+                'address' => $validated['stop']
+            ]);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit()
-    {
-        //
-    }
+        // Crear la solicitud
+        $newRequest = Request::create([
+            'description'          => $validated['description'] ?? '',
+            'payment_method'       => $validated['payment_method'],
+            'user_id'              => 1,
+            'origin_address_id'    => $origin->id,
+            'destination_address_id' => $destination->id,
+            'request_status_id'    => 1, // "Solicitada"
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update()
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy()
-    {
-        //
+        return response()->json([
+            'message' => 'Solicitud creada con éxito',
+            'data'    => $newRequest
+        ], 201);
     }
 }
