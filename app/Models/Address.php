@@ -16,7 +16,10 @@ class Address extends Model
         'floor',
         'department',
         'user_id',
+        'address',
     ];
+
+   
     /**Relacion muchos usuarios  */
     public function users()
     {
