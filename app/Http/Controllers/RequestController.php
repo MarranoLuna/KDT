@@ -10,7 +10,6 @@ class RequestController extends Controller
 {
     public function store(HttpRequest $request)
     {
-        // Validación
         $validated = $request->validate([
             'origin'         => 'required|string|max:255',
             'destination'    => 'required|string|max:255',
@@ -20,7 +19,6 @@ class RequestController extends Controller
             'amount'         => 'nullable|numeric'
         ]);
 
-        // Crear direcciones automáticamente
         $origin = Address::create([
             'address' => $validated['origin']
         ]);
@@ -29,15 +27,13 @@ class RequestController extends Controller
             'address' => $validated['destination']
         ]);
 
-        // (Opcional) si hay parada intermedia
         $stop = null;
         if (!empty($validated['stop'])) {
             $stop = Address::create([
                 'address' => $validated['stop']
             ]);
         }
-
-        // Crear la solicitud
+ 
         $newRequest = Request::create([
             'description'          => $validated['description'] ?? '',
             'payment_method'       => $validated['payment_method'],
