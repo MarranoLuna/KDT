@@ -40,4 +40,6 @@ protected $fillable = [
     {
         return $this->hasMany(Offer::class);
     }
+ 
+
 }
