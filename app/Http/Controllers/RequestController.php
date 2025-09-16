@@ -8,6 +8,14 @@ use Illuminate\Http\Request as HttpRequest;
 
 class RequestController extends Controller
 {
+
+
+public function index()
+{
+    $requests = Request::with('status')->get();
+    return response()->json($requests);
+}
+
     public function store(HttpRequest $request)
     {
         // Validación

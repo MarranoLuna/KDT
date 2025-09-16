@@ -8,6 +8,8 @@ use App\Http\Controllers\RequestController;
 
 
 Route::post('/requests', [RequestController::class, 'store']);
+Route::get('/requests', [RequestController::class, 'index']);
+
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/register', [RegisteredUserController::class, 'store']);
