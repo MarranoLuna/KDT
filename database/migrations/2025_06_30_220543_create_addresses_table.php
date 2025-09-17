@@ -15,8 +15,8 @@ return new class extends Migration
         $table->id();
         $table->string('street', 30);
         $table->string('number', 30);
-        $table->string('intersection', 30);
-        $table->char('floor', 1);
+        $table->string('intersection', 30)->nullable();
+        $table->char('floor', 1)->nullable();
         $table->string('department', 3)->nullable();
         $table->unsignedBigInteger('user_id');
         // Clave foránea
