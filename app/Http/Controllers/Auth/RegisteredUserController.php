@@ -17,11 +17,12 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        //Validación 
-        $request->validate([
-            'firstname' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+        try {
+            //Validación
+            $request->validate([
+                'firstname' => ['required', 'string', 'max:255'],
+                'lastname' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'birthday' => ['required', 'date', 'before:-18 years'],
         ]);
@@ -35,12 +36,14 @@ class RegisteredUserController extends Controller
             'birthday' => $request->birthday,
         ]);
         
-        //Devolver una respuesta JSON
+ 
+    return response()->json(['message' => 'Usuario registrado'], 201);
+    
+    } catch (\Illuminate\Validation\ValidationException $e) {
         return response()->json([
-            'message' => 'Usuario registrado',
-            'user' => $user
-        ]); 
-        
+            'message' => 'Los datos proporcionados no son válidos.',
+            'errors' => $e->errors() 
+        ], 422);
     }
 }
-
+}

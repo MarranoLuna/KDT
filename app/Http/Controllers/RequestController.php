@@ -38,6 +38,16 @@ public function update(Request $request, $id)
         'message' => 'Solicitud actualizada correctamente',
         'data' => $solicitud,
     ]);
+
+    public function getUserRequests($id)
+    
+{
+    $requests = Request::where('user_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->get(['id', 'description', 'status', 'origin_street', 'origin_number', 'destination_street', 'destination_number', 'stop_street', 'stop_number', 'amount', 'payment_method', 'created_at']);
+
+    return response()->json($requests);
+
 }
 
 
@@ -46,6 +56,7 @@ public function index()
     $requests = Request::with('status')->get();
     return response()->json($requests);
 }
+
 
     public function store(HttpRequest $request)
     {
@@ -112,4 +123,26 @@ public function index()
             'data'    => $newRequest
         ], 201);
     }
+
+    public function destroy($id)
+{
+    $request = Request::find($id);
+
+    if (!$request) {
+        return response()->json(['message' => 'Solicitud no encontrada'], 404);
+    }
+
+    $request->delete();
+
+    return response()->json(['message' => 'Solicitud eliminada con éxito']);
+}
+
+public function update(Request $request, $id)
+{
+    $solicitud = Request::findOrFail($id);
+    $solicitud->update($request->all());
+
+    return response()->json($solicitud);
+}
+
 }
