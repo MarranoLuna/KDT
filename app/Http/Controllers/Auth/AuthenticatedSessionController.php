@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\JsonResponse;
 
 class AuthenticatedSessionController extends Controller
@@ -19,36 +20,41 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
-
-    /**
-     * Handle an incoming authentication request.
-     */
-
-    public function store(Request $request): JsonResponse
+    //LOGIN ESCRITORIO
+    public function store(LoginRequest $request)
     {
-        // Validar las credenciales
-        $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $request->authenticate();
 
-        // Intentar autenticar al usuario
-        if (! Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'message' => 'Credenciales inválidas.'
-            ], 401);
-        }
+        $request->session()->regenerate();
 
-        // Obtener al usuario
-        $user = $request->user();
-
-        // Devolver una respuesta JSON 
-        return response()->json([
-            'message' => 'Login exitoso',
-            'user' => $user,
-        ]);
+        return redirect()->intended('/dashboard');
     }
 
+    //LOGIN IONIC
+    public function ion_store(Request $request): JsonResponse
+        {
+            // Validar las credenciales
+            $request->validate([
+                'email' => ['required', 'string', 'email'],
+                'password' => ['required', 'string'],
+            ]);
+
+            // Intentar autenticar al usuario
+            if (! Auth::attempt($request->only('email', 'password'))) {
+                return response()->json([
+                    'message' => 'Credenciales inválidas.'
+                ], 401);
+            }
+
+            // Obtener al usuario
+            $user = $request->user();
+
+            // Devolver una respuesta JSON 
+            return response()->json([
+                'message' => 'Login exitoso',
+                'user' => $user,
+            ]);
+        }
 
     /**
      * Destroy an authenticated session.
@@ -66,3 +72,13 @@ class AuthenticatedSessionController extends Controller
 
     
 }
+
+
+
+
+    /**
+     * Handle an incoming authentication request.
+     */
+    /* FUNCIÓN ANTERIOR PARA DEVOLVER EL USER / COMPLETAR EL LOGIN - DEVUELVE EL USER A IONIC
+    
+    */
