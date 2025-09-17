@@ -8,7 +8,10 @@ use App\Http\Controllers\RequestController;
 
 
 Route::post('/requests', [RequestController::class, 'store']);
+
 Route::get('/requests', [RequestController::class, 'index']);
+Route::put('/requests/{id}', [RequestController::class, 'update']);   // o PATCH
+Route::delete('/requests/{id}', [RequestController::class, 'destroy']);
 
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);

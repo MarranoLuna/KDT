@@ -5,9 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Request;
 use App\Models\Address;
 use Illuminate\Http\Request as HttpRequest;
+use App\Models\Request as UserRequest; // Evita conflicto con Laravel Request
 
 class RequestController extends Controller
 {
+
+    public function destroy($id)
+{
+    $solicitud = UserRequest::findOrFail($id);
+    $solicitud->delete();
+
+    return response()->json(['message' => 'Solicitud eliminada correctamente']);
+}
+
+
+public function update(Request $request, $id)
+{
+    $solicitud = UserRequest::findOrFail($id);
+
+    // Solo actualiza si el campo está presente
+    if ($request->has('description')) {
+        $solicitud->description = $request->input('description');
+    }
+    if ($request->has('amount')) {
+        $solicitud->amount = $request->input('amount');
+    }
+
+    // Agrega más campos editables si querés
+    $solicitud->save();
+
+    return response()->json([
+        'message' => 'Solicitud actualizada correctamente',
+        'data' => $solicitud,
+    ]);
+}
 
 
 public function index()
