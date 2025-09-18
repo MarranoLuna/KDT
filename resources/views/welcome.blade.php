@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSdr-1bVaRWRDsiiJYizyKcapHgaeTpGQ"></script>
     <title>Bienvenidos a KDT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
