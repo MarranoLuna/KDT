@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use Illuminate\Http\Request;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
 
@@ -25,8 +26,13 @@ Route::post('/ion_login', [AuthenticatedSessionController::class, 'ion_store']);
 
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return response()->json($request->user());
+});
+
 // Ruta para obtener los datos de un usuario por su ID
-Route::get('/users/{user}', [UserController::class, 'show']);
+///Route::get('/users/{user}', [UserController::class, 'show']);
 
 // Ruta para actualizar los datos de un usuario por su ID
-Route::put('/users/{user}', [UserController::class, 'update']); 
+////Route::put('/users/{user}', [UserController::class, 'update']); 
+
