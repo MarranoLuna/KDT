@@ -40,6 +40,13 @@ protected $fillable = [
     {
         return $this->hasMany(Offer::class);
     }
- 
+
+
+    public function address()
+    {
+    return $this->belongsTo(Address::class);
+    }
+
+
 
 }
