@@ -48,11 +48,14 @@ class AuthenticatedSessionController extends Controller
 
             // Obtener al usuario
             $user = $request->user();
+            $token = $user->createToken('ionic-token')->plainTextToken;
+
 
             // Devolver una respuesta JSON 
             return response()->json([
                 'message' => 'Login exitoso',
                 'user' => $user,
+                'token' => $token
             ]);
         }
 
