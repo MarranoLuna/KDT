@@ -2,12 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Address;
+use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
+    /**
+     * Almacena una nueva dirección en la base de datos.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+  
+        $validatedData = $request->validate([
+            'street' => 'required|string|max:255',
+            'number' => 'nullable|string|max:255',
+            'intersection' => 'nullable|string|max:255',
+            'floor' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
+        ]);
+
+        $address = new Address($validatedData);
+
+
+        $address->user_id = Auth::id();
+
+     
+        $address->save();
+
+        return response()->json([
+            'message' => '¡Dirección guardada exitosamente!',
+            'address' => $address
+        ], 201);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -24,13 +55,7 @@ class AddressController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+   
 
     /**
      * Display the specified resource.

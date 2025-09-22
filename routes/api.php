@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AddressController;
 
 
 Route::post('/requests', [RequestController::class, 'store']);
@@ -29,6 +30,8 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($request->user());
 });
+
+Route::post('/addresses', [AddressController::class, 'store']);
 
 // Ruta para obtener los datos de un usuario por su ID
 ///Route::get('/users/{user}', [UserController::class, 'show']);
