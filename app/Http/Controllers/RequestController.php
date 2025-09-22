@@ -5,62 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\Request;
 use App\Models\Address;
 use Illuminate\Http\Request as HttpRequest;
-use App\Models\Request as UserRequest; // Evita conflicto con Laravel Request
 
 class RequestController extends Controller
 {
-
-    public function destroy($id)
-{
-    $solicitud = UserRequest::findOrFail($id);
-    $solicitud->delete();
-
-    return response()->json(['message' => 'Solicitud eliminada correctamente']);
-}
-
-
-public function update(Request $request, $id)
-{
-    $solicitud = UserRequest::findOrFail($id);
-
-    // Solo actualiza si el campo está presente
-    if ($request->has('description')) {
-        $solicitud->description = $request->input('description');
-    }
-    if ($request->has('amount')) {
-        $solicitud->amount = $request->input('amount');
-    }
-
-    // Agrega más campos editables si querés
-    $solicitud->save();
-
-    return response()->json([
-        'message' => 'Solicitud actualizada correctamente',
-        'data' => $solicitud,
-    ]);
-
-    public function getUserRequests($id)
     
-{
-    $requests = Request::where('user_id', $id)
-        ->orderBy('created_at', 'desc')
-        ->get(['id', 'description', 'status', 'origin_street', 'origin_number', 'destination_street', 'destination_number', 'stop_street', 'stop_number', 'amount', 'payment_method', 'created_at']);
+    public function index()
+    {
+        $requests = Request::with('status')->get();
+        return response()->json($requests);
+    }
 
-    return response()->json($requests);
+   
+    public function getUserRequests($id)
+    {
+        $requests = Request::where('user_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get([
+                'id', 'description', 'request_status_id',
+                'origin_address_id', 'destination_address_id',
+                'stop_address_id', 'amount', 'payment_method', 'created_at'
+            ]);
 
-}
-
-
-public function index()
-{
-    $requests = Request::with('status')->get();
-    return response()->json($requests);
-}
-
+        return response()->json($requests);
+    }
 
     public function store(HttpRequest $request)
     {
-        // Validación
         $validated = $request->validate([
             'origin_street'      => 'required|string|max:255',
             'origin_number'      => 'required|string|max:30',
@@ -76,17 +46,16 @@ public function index()
             'amount'             => 'nullable|numeric'
         ]);
 
-     
+        
         $origin = Address::create([
             'street'      => $validated['origin_street'],
             'number'      => $validated['origin_number'],
             'intersection'=> $validated['intersection'] ?? null,
             'floor'       => $validated['floor'] ?? null,
             'department'  => $validated['department'] ?? null,
-            'user_id'     => auth()->id() ?? 1 // ⚠️ reemplazar por auth real
+            'user_id'     => auth()->id() ?? 1
         ]);
 
-      
         $destination = Address::create([
             'street'      => $validated['destination_street'],
             'number'      => $validated['destination_number'],
@@ -114,8 +83,9 @@ public function index()
             'user_id'                => auth()->id() ?? 1,
             'origin_address_id'      => $origin->id,
             'destination_address_id' => $destination->id,
-            'stop_address_id'        => $stop?->id, // null si no existe
-            'request_status_id'      => 1, // "Solicitada"
+            'stop_address_id'        => $stop?->id,
+            'request_status_id'      => 1, 
+            'amount'                 => $validated['amount'] ?? null,
         ]);
 
         return response()->json([
@@ -124,25 +94,42 @@ public function index()
         ], 201);
     }
 
-    public function destroy($id)
+    public function update(Request $request, $id)
 {
-    $request = Request::find($id);
+    $req = RequestModel::findOrFail($id);
 
-    if (!$request) {
-        return response()->json(['message' => 'Solicitud no encontrada'], 404);
+    
+    if ($req->status !== 'solicitada') {
+        return response()->json(['message' => 'Solo se pueden editar solicitudes en estado solicitada'], 403);
     }
 
-    $request->delete();
+    $validated = $request->validate([
+        'description' => 'nullable|string|max:255',
+        'origin_street' => 'nullable|string|max:255',
+        'origin_number' => 'nullable|string|max:50',
+        'destination_street' => 'nullable|string|max:255',
+        'destination_number' => 'nullable|string|max:50',
+        'payment_method' => 'nullable|string|in:efectivo,tarjeta,transferencia'
+    ]);
 
-    return response()->json(['message' => 'Solicitud eliminada con éxito']);
+    $req->update($validated);
+
+    return response()->json([
+        'message' => 'Solicitud actualizada correctamente',
+        'request' => $req
+    ]);
 }
 
-public function update(Request $request, $id)
-{
-    $solicitud = Request::findOrFail($id);
-    $solicitud->update($request->all());
+    public function destroy($id)
+    {
+        $solicitud = Request::find($id);
 
-    return response()->json($solicitud);
-}
+        if (!$solicitud) {
+            return response()->json(['message' => 'Solicitud no encontrada'], 404);
+        }
 
+        $solicitud->delete();
+
+        return response()->json(['message' => 'Solicitud eliminada con éxito']);
+    }
 }
