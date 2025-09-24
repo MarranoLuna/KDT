@@ -6,54 +6,61 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+
 class AddressController extends Controller
 {
     /**
-     * Almacena una nueva dirección en la base de datos.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Muestra las direcciones guardadas por un usuario.
+     */
+    public function index()
+    {
+       
+        $userId = Auth::id();
+
+        $addresses = Address::where('user_id', $userId)->latest()->get();
+
+        return response()->json($addresses);
+    }
+
+    /**
+     * Guarda una nueva dirección en la base de datos.
      */
     public function store(Request $request)
     {
-  
-        $validatedData = $request->validate([
-            'street' => 'required|string|max:255',
-            'number' => 'nullable|string|max:255',
-            'intersection' => 'nullable|string|max:255',
-            'floor' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
+        $validator = Validator::make($request->all(), [
+            'address' => 'required|string|max:255',
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
         ]);
 
-        $address = new Address($validatedData);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
+        $userId = Auth::id();
 
-        $address->user_id = Auth::id();
-
-     
-        $address->save();
+        // Usamos updateOrCreate para evitar guardar la misma dirección dos veces
+        $address = Address::updateOrCreate(
+            [
+                'lat' => $request->lat,
+                'lng' => $request->lng,
+                'user_id' => $userId
+            ],
+            [
+                'address' => $request->address,
+            ]
+        );
 
         return response()->json([
-            'message' => '¡Dirección guardada exitosamente!',
+            'message' => 'Dirección guardada con éxito',
             'address' => $address
         ], 201);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
    
 
