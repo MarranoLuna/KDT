@@ -9,17 +9,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 
 
-Route::post('/requests', [RequestController::class, 'store']);
-Route::get('/requests', [RequestController::class, 'index']);
-Route::delete('/requests/{id}', [RequestController::class, 'destroy']);
-Route::match(['put', 'patch'], 'requests/{id}', [RequestController::class, 'update']);
-
-
-Route::get('/requests/user/{id}', [RequestController::class, 'getUserRequests']);
-
-Route::get('/requests', [RequestController::class, 'index']);
-Route::put('/requests/{id}', [RequestController::class, 'update']);   // o PATCH
-Route::delete('/requests/{id}', [RequestController::class, 'destroy']);
 
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -30,6 +19,17 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($request->user());
 });
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/requests', [RequestController::class, 'store']);
+});
+
+
+Route::get('/addresses', [AddressController::class, 'index']);
+
 
 Route::post('/addresses', [AddressController::class, 'store']);
 
