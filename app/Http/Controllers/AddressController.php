@@ -18,9 +18,7 @@ class AddressController extends Controller
     public function index()
     {
        
-        $userId = Auth::id();
-
-        $addresses = Address::where('user_id', $userId)->latest()->get();
+       $addresses = Address::where('user_id', Auth::id())->latest()->get();
 
         return response()->json($addresses);
     }
@@ -34,6 +32,10 @@ class AddressController extends Controller
             'address' => 'required|string|max:255',
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
+            'address_components' => 'nullable|array', 
+            'intersection' => 'nullable|string|max:30',
+            'floor' => 'nullable|string|max:1',
+            'department' => 'nullable|string|max:3',
         ]);
 
         if ($validator->fails()) {
@@ -42,27 +44,42 @@ class AddressController extends Controller
 
         $userId = Auth::id();
 
-        // Usamos updateOrCreate para evitar guardar la misma dirección dos veces
-        $address = Address::updateOrCreate(
-            [
-                'lat' => $request->lat,
-                'lng' => $request->lng,
-                'user_id' => $userId
-            ],
+        
+
+    // extraer calle y número 
+    $street = '';
+    $number = '';
+     if ($request->has('address_components')) {
+        foreach ($request->address_components as $component) {
+            if (in_array('route', $component['types'])) {
+                $street = $component['long_name'];
+            }
+            if (in_array('street_number', $component['types'])) {
+                $number = $component['long_name'];
+            }
+        }
+    }
+
+    if (empty($street)) {
+        return response()->json(['message' => 'No se pudo determinar el nombre de la calle a partir de la ubicación.'], 422);
+    }
+    
+   $address = Address::updateOrCreate(
+            ['lat' => $request->lat, 'lng' => $request->lng, 'user_id' => $userId],
             [
                 'address' => $request->address,
+                'intersection' => $request->intersection,
+                'floor' => $request->floor,
+                'department' => $request->department,
+                // PUNTO CRÍTICO #5: Nos aseguramos de guardar street y number
+                'street' => $street,
+                'number' => $number,
             ]
         );
 
-        return response()->json([
-            'message' => 'Dirección guardada con éxito',
-            'address' => $address
-        ], 201);
+        return response()->json(['message' => 'Dirección guardada con éxito', 'address' => $address], 201);
     }
 
-
-
-   
 
     /**
      * Display the specified resource.

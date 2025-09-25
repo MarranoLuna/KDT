@@ -16,13 +16,24 @@ class AddressFactory extends Factory
      */
     public function definition(): array
     {
+
+        $street = $this->faker->streetName();
+        $number = $this->faker->buildingNumber();    
+
+
            return [
-            'street' => $this->faker->streetName(),
-            'number' => $this->faker->buildingNumber(),
+            'street' => $street, // Usamos la variable
+            'number' => $number, // Usamos la variable
+            
+        
+            'address' => "$street $number, Gualeguaychú, Entre Ríos", // <-- CAMBIO CLAVE
+            
             'intersection' => $this->faker->streetName(),
-            'floor' => $this->faker->randomElement(['1', '2', '3', '4', '5', '6', 'A', 'B', 'C']),
+            'floor' => $this->faker->randomElement(['1', '2', '3', 'A', 'B']),
             'department' => strtoupper($this->faker->randomLetter() . $this->faker->randomDigit()),
-            'user_id' =>fake()->numberBetween(11,23)
+            'user_id' => fake()->numberBetween(1, 10),
+            'lat' => $this->faker->latitude(-33.033, -32.988),
+            'lng' => $this->faker->longitude(-58.553, -58.484),
         ];
 
     }
