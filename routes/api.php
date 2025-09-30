@@ -34,8 +34,8 @@ Route::get('/addresses', [AddressController::class, 'index']);
 Route::post('/addresses', [AddressController::class, 'store']);
 
 // Ruta para obtener los datos de un usuario por su ID
-///Route::get('/users/{user}', [UserController::class, 'show']);
+Route::get('/users/{user}', [UserController::class, 'show']);
 
 // Ruta para actualizar los datos de un usuario por su ID
-////Route::put('/users/{user}', [UserController::class, 'update']); 
+Route::put('/users/{user}', [UserController::class, 'update']); 
 
