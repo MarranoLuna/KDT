@@ -110,6 +110,12 @@ class AddressController extends Controller
      */
     public function destroy(Address $address)
     {
-        //
+      
+        if (Auth::id() !== $address->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403); 
+        }
+        $address->delete();
+        return response()->json(null, 204); 
+    
     }
 }
