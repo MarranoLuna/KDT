@@ -18,11 +18,20 @@
 
 ---
 ## ⚡ Instalación
-- Clonar el respositorio
-- Instalar dependencias php (composer install)
-- configurar archivo .ENV
-- Migrar base de datos y ejecutar Seeders (php artisan migrate:fresh --seed)
-- Levantar servidor (php artisan serve)
+
+1. Clonar el repositorio
+2. Instalar dependencias PHP
+   -  En la carpeta raiz del proyecto ejecutar: `composer install`
+3. Configurar archivo .env
+   - `cp .env.example .env`
+   - Generar key: `php artisan key:generate`
+   - Ingresar las credenciales de tu base de datos en el nuevo archivo **.env**.
+4. Migrar BBDD y ejecutar seeders
+   - En la raiz del proyecto ejecutar: `php artisan migrate:fresh --seed`
+5. Levantar servidor
+   - `php artisan serve`
+6. Seguir los pasos para levanta el FrontEnd: https://github.com/MarranoLuna/KDT-Ionic 
+
 
 ---
 
