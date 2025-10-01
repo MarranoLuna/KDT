@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use Illuminate\Support\Facades\Auth;
-
-use Illuminate\Http\Request;
+use App\Models\Request; 
+use Illuminate\Http\Request as HttpRequest; 
 use Illuminate\Support\Facades\Validator;
 
 
@@ -71,7 +71,7 @@ class AddressController extends Controller
                 'intersection' => $request->intersection,
                 'floor' => $request->floor,
                 'department' => $request->department,
-                // PUNTO CRÍTICO #5: Nos aseguramos de guardar street y number
+               
                 'street' => $street,
                 'number' => $number,
             ]
@@ -110,12 +110,23 @@ class AddressController extends Controller
      */
     public function destroy(Address $address)
     {
-      
-        if (Auth::id() !== $address->user_id) {
-            return response()->json(['message' => 'No autorizado'], 403); 
-        }
-        $address->delete();
-        return response()->json(null, 204); 
-    
+   
+    if (Auth::id() !== $address->user_id) {
+        return response()->json(['message' => 'No autorizado'], 403);
     }
+
+    
+    $isBeingUsed = Request::where('origin_address_id', $address->id)
+                           ->orWhere('destination_address_id', $address->id)
+                           ->exists();
+
+    if ($isBeingUsed) {
+       
+        return response()->json(['message' => 'Esta dirección no se puede eliminar porque está en uso en una o más solicitudes.'], 409);
+    }
+
+    $address->delete();
+
+    return response()->json(null, 204);
+}
 }
