@@ -11,9 +11,20 @@ use App\Models\Request;
 
 class RequestController extends Controller
 {
+      public function index()
+    {
+        $requests = Request::where('user_id', Auth::id())
+                            ->with(['originAddress', 'destinationAddress']) // Carga las direcciones asociadas
+                            ->latest() 
+                            ->get();
+
+        return response()->json($requests);
+    }
+
+
+
     public function store(HttpRequest $httpRequest)
     {
-        // 1. Validar los datos que llegan desde Ionic
         $validator = Validator::make($httpRequest->all(), [
             'origin_address' => 'required|string|max:255',
             'origin_lat' => 'required|numeric',
@@ -26,55 +37,97 @@ class RequestController extends Controller
             'stop_lng' => 'nullable|numeric',
             'description' => 'required|string',
             'payment_method' => 'required|string',
+            // ... otros campos como 'amount' ...
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         
-        $validatedData = $validator->validated();
-        $userId = Auth::id();
-
-        // 2. Procesar las direcciones: buscar si ya existen o crearlas
-        // Usamos updateOrCreate para evitar duplicados basados en las coordenadas
-        $originAddress = Address::updateOrCreate(
-            ['lat' => $validatedData['origin_lat'], 'lng' => $validatedData['origin_lng']],
-            ['address' => $validatedData['origin_address'], 'user_id' => $userId]
-        );
-
-        $destinationAddress = Address::updateOrCreate(
-            ['lat' => $validatedData['destination_lat'], 'lng' => $validatedData['destination_lng']],
-            ['address' => $validatedData['destination_address'], 'user_id' => $userId]
-        );
+        $data = $httpRequest->all();
+        $user = Auth::user();
+         $originAddress = $this->findOrCreateAddress($data, 'origin', $user->id);
+        $destinationAddress = $this->findOrCreateAddress($data, 'destination', $user->id);
 
         $stopAddressId = null;
-        if (!empty($validatedData['stop_address'])) {
-            $stopAddress = Address::updateOrCreate(
-                ['lat' => $validatedData['stop_lat'], 'lng' => $validatedData['stop_lng']],
-                ['address' => $validatedData['stop_address'], 'user_id' => $userId]
-            );
-            $stopAddressId = $stopAddress->id;
+        if (!empty($data['stop_address'])) {
+            $stopAddress = $this->findOrCreateAddress($data, 'stop_', $user->id);
+            // Necesitarás una columna para la parada en tu tabla 'requests'
+            // Por ejemplo: 'stop_address_id'
         }
 
-        // 3. Crear la solicitud (Request) con los IDs de las direcciones
-        try {
-            $newRequest = Request::create([
-                'description' => $validatedData['description'],
-                'payment_method' => $validatedData['payment_method'],
+        // 3. Crear la Solicitud (Request)
+        $newRequest = Request::create([
+            'description' => $data['description'],
+            'payment_method' => $data['payment_method'],
+            'user_id' => $user->id,
+            'origin_address_id' => $originAddress->id, 
+            'destination_address_id' => $destinationAddress->id, 
+            'request_status_id' => 1, 
+        ]);
+
+        return response()->json($newRequest, 201);
+    }
+private function findOrCreateAddress(array $data, string $prefix, int $userId): Address
+    {
+        $street = '';
+        $number = '';
+        if (!empty($data[$prefix.'_components'])) {
+            foreach ($data[$prefix.'_components'] as $component) {
+                if (in_array('route', $component['types'])) {
+                    $street = $component['long_name'];
+                }
+                if (in_array('street_number', $component['types'])) {
+                    $number = $component['long_name'];
+                }
+            }
+        }
+
+        return Address::updateOrCreate(
+            [
+                'lat' => $data[$prefix . '_lat'],
+                'lng' => $data[$prefix . '_lng'],
                 'user_id' => $userId,
-                'origin_address_id' => $originAddress->id,
-                'destination_address_id' => $destinationAddress->id,
-                'address_id' => $stopAddressId, 
-                'request_status_id' => 1, 
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al crear la solicitud', 'error' => $e->getMessage()], 500);
+            ],
+            [
+                'address' => $data[$prefix . '_address'],
+                'street' => $street,
+                'number' => $number,
+            ]
+        );
+    }
+
+     public function update(HttpRequest $httpRequest, Request $request)
+    {
+        
+        if (Auth::id() !== $request->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
         }
 
+        $validator = Validator::make($httpRequest->all(), [
+            'description' => 'sometimes|required|string',
+            
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $request->update($validator->validated());
+
+        return response()->json($request);
+    }
+
+    
+    public function destroy(Request $request)
+    {
        
-        return response()->json([
-            'message' => 'Solicitud creada con éxito',
-            'request' => $newRequest
-        ], 201);
+        if (Auth::id() !== $request->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $request->delete();
+
+        return response()->json(null, 204);
     }
 }
