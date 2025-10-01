@@ -26,8 +26,9 @@ class AddressController extends Controller
     /**
      * Guarda una nueva dirección en la base de datos.
      */
-    public function store(Request $request)
+    public function store(HttpRequest $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'address' => 'required|string|max:255',
             'lat' => 'required|numeric',
