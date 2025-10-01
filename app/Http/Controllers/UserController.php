@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash; 
+use Illuminate\Validation\Rules\Password;
+
 
 class UserController extends Controller
 {
@@ -55,6 +58,40 @@ class UserController extends Controller
     {
         $user->update($request->all());
         return response()->json($user);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        // 1. Validar los datos que llegan desde Ionic
+        $validatedData = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => [
+                'required',
+                'string',
+                'confirmed', // Esto busca un campo 'new_password_confirmation' y verifica que coincida
+                Password::min(8)->mixedCase()->numbers() // Reglas de contraseña fuertes
+            ],
+        ]);
+
+        // 2. Obtener el usuario que está haciendo la petición
+        $user = $request->user();
+
+        // 3. Verificar que la contraseña actual sea correcta 
+        if (!Hash::check($validatedData['current_password'], $user->password)) {
+            // Si la contraseña no coincide, devolvemos un error de validación
+            return response()->json([
+                'message' => 'La contraseña actual es incorrecta.'
+            ], 422); // 422 Unprocessable Entity
+        }
+
+        // 4. Hashear y guardar la nueva contraseña 
+        $user->password = Hash::make($validatedData['new_password']);
+        $user->save();
+
+        // 5. Devolver una respuesta de éxito
+        return response()->json([
+            'message' => 'Contraseña actualizada exitosamente.'
+        ]);
     }
 
     /**
