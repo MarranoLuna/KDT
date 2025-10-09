@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'birthday'=> fake()->dateTimeBetween('-40 years', '-17 years')->format('Y-m-d'),
             'email_verified_at' => now(),
             'remember_token' => Str::random(10), 
+            'role_id' => 1, 
         ];
 
 

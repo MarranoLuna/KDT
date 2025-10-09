@@ -21,6 +21,7 @@ class UsersSeeder extends Seeder
                 'password' => "1234",
                 'birthday' =>'1997-08-15',
                 'email_verified_at' => now(),
+                'role_id' => 1,
             ],
             [
                 'email' => 'elisaronconi28@gmail.com',
@@ -29,6 +30,7 @@ class UsersSeeder extends Seeder
                 'password' => "1234",
                 'birthday' =>'2000-07-15',
                 'email_verified_at' => now(),
+                'role_id' => 1,
             ],
             [
                 'email' => 'lunamarrano2@gmail.com',
@@ -37,6 +39,16 @@ class UsersSeeder extends Seeder
                 'password' => "1234",
                 'birthday' =>'2003-04-26',
                 'email_verified_at' => now(),
+                'role_id' => 1,
+            ],
+            [
+                'email' => 'kdt@gmail.com',
+                'firstname' => "Patricio",
+                'lastname' => "Cadete",
+                'password' => "1234",
+                'birthday' =>'2000-04-26',
+                'email_verified_at' => now(),
+                'role_id' => 2,
             ],
         ];
 
