@@ -74,4 +74,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Courier::class);
     }
+
+    public function role()
+{
+    return $this->belongsTo(Role::class);
+}
 }

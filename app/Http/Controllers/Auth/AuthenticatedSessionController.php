@@ -48,6 +48,7 @@ class AuthenticatedSessionController extends Controller
 
             // Obtener al usuario
             $user = $request->user();
+            $user->load('role');
             $token = $user->createToken('ionic-token')->plainTextToken;
 
 

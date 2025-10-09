@@ -8,7 +8,7 @@ return [
     'allowed_methods' => ['*'],
 
     // especifica el origen de  app de Ionic
-    'allowed_origins' => ['http://localhost:8100'],
+    'allowed_origins' => ['http://localhost:8100', 'http://localhost:8101'],
 
     'allowed_origins_patterns' => [],
 
