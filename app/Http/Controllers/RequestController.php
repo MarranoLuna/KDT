@@ -51,7 +51,7 @@ class RequestController extends Controller
 
         $stopAddressId = null;
         if (!empty($data['stop_address'])) {
-            $stopAddress = $this->findOrCreateAddress($data, 'stop_', $user->id);
+            $stopAddress = $this->findOrCreateAddress($data, 'stop', $user->id);
             // Necesitarás una columna para la parada en tu tabla 'requests'
             // Por ejemplo: 'stop_address_id'
         }
@@ -97,26 +97,45 @@ private function findOrCreateAddress(array $data, string $prefix, int $userId): 
         );
     }
 
-     public function update(HttpRequest $httpRequest, Request $request)
-    {
-        
-        if (Auth::id() !== $request->user_id) {
-            return response()->json(['message' => 'No autorizado'], 403);
-        }
-
-        $validator = Validator::make($httpRequest->all(), [
-            'description' => 'sometimes|required|string',
-            
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $request->update($validator->validated());
-
-        return response()->json($request);
+   
+public function update(HttpRequest $httpRequest, Request $request)
+{
+    
+    if (Auth::id() !== $request->user_id) {
+        return response()->json(['message' => 'No autorizado'], 403);
     }
+
+    
+    $validator = Validator::make($httpRequest->all(), [
+        'description' => 'sometimes|required|string',
+        'payment_method' => 'sometimes|required|string', 
+        'stop_address' => 'nullable|string|max:255',
+        'stop_lat' => 'nullable|numeric|required_with:stop_address',
+        'stop_lng' => 'nullable|numeric|required_with:stop_address',
+        'stop_components' => 'nullable|array',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
+    }
+
+    $data = $httpRequest->all();
+    $request->description = $data['description'];
+    $request->payment_method = $data['payment_method'];
+
+    
+    if (isset($data['stop_address']) && !empty($data['stop_address'])) {
+        $stopAddress = $this->findOrCreateAddress($data, 'stop', Auth::id());
+        $request->address_id = $stopAddress->id; 
+    } else {
+        $request->address_id = null;
+    }
+    
+    $request->save();
+
+   
+    return response()->json($request->load(['originAddress', 'destinationAddress', 'status', 'address']));
+}
 
     
     public function destroy(Request $request)
