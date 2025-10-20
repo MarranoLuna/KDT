@@ -20,7 +20,8 @@ return new class extends Migration
         $table->string('permission', 50);
         $table->boolean('is_validated')->default(false);
         $table->foreignId('vehicle_type_id')->constrained();
-        $table->foreignId('vehicle_brand_id')->constrained();
+        $table->foreignId('motorcycle_brand_id')->nullable()->constrained();
+        $table->foreignId('bicycle_brand_id')->nullable()->constrained();
         $table->foreignId('courier_id')->constrained();
         $table->timestamps();
     }

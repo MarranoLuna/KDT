@@ -4,7 +4,8 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\VehicleType;
-use App\Models\VehicleBrand;
+use App\Models\MotorcycleBrand;
+use App\Models\BicycleBrand;
 use App\Models\Courier;
 
 /**
@@ -22,6 +23,21 @@ class VehicleFactory extends Factory
 
     public function definition(): array
     {
+        $vehicleType = VehicleType::inRandomOrder()->first();
+
+        $brandData = [
+        'motorcycle_brand_id' => null,
+        'bicycle_brand_id' => null,
+    ];
+  
+        if ($vehicleType->name === 'Motocicleta') {
+            $brandData['motorcycle_brand_id'] = MotorcycleBrand::inRandomOrder()->first()->id;
+            $brandData['bicycle_brand_id'] = null;
+        } else if ($vehicleType->name === 'Bicicleta') {
+            $brandData['motorcycle_brand_id'] = null;
+            $brandData['bicycle_brand_id'] = BicycleBrand::inRandomOrder()->first()->id;
+        }
+
         return [
             'model' => $this->faker->word(),
             'year' => $this->faker->year(),
@@ -29,8 +45,9 @@ class VehicleFactory extends Factory
             'registration_plate' => strtoupper($this->faker->bothify('??###??')),
             'permission' => $this->faker->randomElement(['Nacional', 'Provincial']),
             'is_validated' => $this->faker->boolean(),
-            'vehicle_type_id' => VehicleType::inRandomOrder()->first()->id,
-            'vehicle_brand_id' => VehicleBrand::inRandomOrder()->first()->id,
+            'vehicle_type_id' => $vehicleType->id,
+            'motorcycle_brand_id' => $brandData['motorcycle_brand_id'],
+            'bicycle_brand_id' => $brandData['bicycle_brand_id'],
             'courier_id' => Courier::inRandomOrder()->first()->id,
         ];
 
