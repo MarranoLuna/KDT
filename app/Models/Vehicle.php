@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\VehicleBrand; 
+use App\Models\MotorcycleBrand; 
+use App\Models\BicycleBrand;
 use App\Models\VehicleType; 
 
 
@@ -13,11 +14,17 @@ class Vehicle extends Model
     /** @use HasFactory<\Database\Factories\VehicleFactory> */
     use HasFactory;
     /** Relacion una marca un vehiculo  */
-    public function vehicleBrand()
+        public function motorcycleBrand()
     {
-        return $this->hasOne('App\VehicleBrand');
+        return $this->belongsTo(MotorcycleBrand::class);
     }
-     /** Relacion un tipo un vehiculo  */
+
+    public function bicycleBrand()
+    {
+        return $this->belongsTo(BicycleBrand::class);
+    }
+
+    /** Relacion un tipo un vehiculo  */
     public function vehicleType()
     {
         return $this->hasOne('App\VehicleType');
@@ -26,11 +33,6 @@ class Vehicle extends Model
     public function documents()
     {
     return $this->hasMany(VehicleDoc::class);
-    }
-
-    public function brand()
-    {
-    return $this->belongsTo(VehicleBrand::class,'vehicle_brand_id');
     }
 
     public function type()

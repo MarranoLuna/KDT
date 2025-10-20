@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MotorcycleBrand;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,7 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UsersSeeder::class, 
             CouriersSeeder::class,
-            VehicleBrandSeeder::class, 
+            MotorcycleBrandSeeder::class, 
+            BicycleBrandSeeder::class,
             AddressSeeder::class,   
             RequestStatusesSeeder::class,   
             VehicleTypeSeeder::class,   

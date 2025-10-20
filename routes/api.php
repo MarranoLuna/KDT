@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
-
-
+use App\Http\Controllers\MotorcycleBrandController;
+use App\Http\Controllers\BicycleBrandController;
 
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -19,6 +19,9 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($request->user());
 });
+
+Route::get('/bicycle-brands', [BicycleBrandController::class, 'index']);
+Route::get('/motorcycle-brands', [MotorcycleBrandController::class, 'index']);
 
 
 

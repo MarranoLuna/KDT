@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Vehicle; 
 
-class VehicleBrand extends Model
+class BicycleBrand extends Model
 {
-    /** @use HasFactory<\Database\Factories\VehicleBrandFactory> */
+    /** @use HasFactory<\Database\Factories\BicycleBrandFactory> */
     use HasFactory;
- 
-    public function vehicle()
+
+    public function vehicles()
     {
         return $this->hasMany(Vehicle::class);
     }
