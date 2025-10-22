@@ -28,7 +28,7 @@ Route::get('/motorcycle-brands', [MotorcycleBrandController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/requests', [RequestController::class, 'store']);
+    Route::post('/requests/create', [RequestController::class, 'store']);
     Route::get('/requests', [RequestController::class, 'index']);
     Route::put('/requests/{request}', [RequestController::class, 'update']);
     Route::delete('/requests/{request}', [RequestController::class, 'destroy']);
