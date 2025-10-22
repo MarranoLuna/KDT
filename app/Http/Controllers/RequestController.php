@@ -19,6 +19,8 @@ class RequestController extends Controller
                             ->get();
 
         return response()->json($requests);
+
+        
     }
 
 
@@ -148,5 +150,30 @@ public function update(HttpRequest $httpRequest, Request $request)
         $request->delete();
 
         return response()->json(null, 204);
+    }
+
+
+    public function availableForKdt() // para que kdt vea todas las solicitudes
+    {
+       $kdtId = Auth::id();
+
+    $requests = Request::whereIn('request_status_id', [1, 2])
+                        ->with([
+                            'originAddress', 
+                            'destinationAddress', 
+                            'status', 
+                            'address', 
+                            'user',
+                            'offers' => function ($query) use ($kdtId) {
+                                $query->where('courier_id', $kdtId);
+                            }
+                        ])
+                        ->latest()
+                        ->get();
+    $requests->each(function ($request) {
+        $request->has_offered = $request->offers->isNotEmpty();
+    });
+
+    return response()->json($requests);
     }
 }
