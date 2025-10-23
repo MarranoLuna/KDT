@@ -13,11 +13,11 @@ return new class extends Migration
     {
        Schema::create('requests', function (Blueprint $table) {
         $table->id();
+        $table->string('title', 128);
         $table->string('description');
-        $table->string('payment_method');
+        $table->string('payment_method', 30);
         $table->foreignId('user_id')->constrained();
 
-    
         
         $table->foreignId('origin_address_id')->constrained('addresses');
         $table->foreignId('destination_address_id')->constrained('addresses');

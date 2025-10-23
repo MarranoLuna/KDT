@@ -12,13 +12,13 @@ class RequestStatusesSeeder extends Seeder
         public function run(): void
     {
         RequestStatus::create([
-            'name' =>'solicitada',
+            'name' =>'SIN OFERTAR',
         ]);
         RequestStatus::create([
-            'name' =>'ofertada',
+            'name' =>'OFERTADA',
         ]);
         RequestStatus::create([
-            'name' =>'aceptada',
+            'name' =>'ACEPTADA',
         ]);
     }
 
