@@ -14,7 +14,7 @@ class RequestController extends Controller
       public function index()
     {
         $requests = Request::where('user_id', Auth::id())
-            ->with(['originAddress', 'destinationAddress']) // Carga las direcciones asociadas
+            ->with('originAddress', 'destinationAddress', 'status') // Carga las direcciones asociadas
             ->latest() 
             ->get();
 
@@ -29,6 +29,7 @@ class RequestController extends Controller
     {	 
 		$data = $httpRequest->all();
         $validator = Validator::make($data, [
+            'title' => 'required|string|max:128',
             'origin_address' => 'required|string|max:255',
             'origin_lat' => 'required|numeric',
             'origin_lng' => 'required|numeric',
@@ -63,6 +64,7 @@ class RequestController extends Controller
 
 			//  CREAR LA SOLICITUD
 			$newRequest = Request::create([
+                'title' => $data['title'],
 				'description' => $data['description'],
 				'payment_method' => $data['payment_method'],
 				'user_id' => $user->id,

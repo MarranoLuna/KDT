@@ -20,6 +20,7 @@ class RequestFactory extends Factory
      public function definition(): array
     {
         return [
+            'title' => $this->faker->sentence(),
             'description' => $this->faker->sentence(),
             'payment_method' => $this->faker->randomElement(['', '', '']),
             'user_id' => User::inRandomOrder()->first()->id, 

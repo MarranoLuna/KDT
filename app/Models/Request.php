@@ -14,6 +14,7 @@ class Request extends Model
      * Coinciden con los nombres de tus columnas, incluyendo los typos.
      */
     protected $fillable = [
+        'title',
         'description',
         'payment_method',
         'user_id',
@@ -43,7 +44,7 @@ class Request extends Model
      */
     public function status()
     {
-        return $this->belongsTo(RequestStatus::class, 'request_satus_id');
+        return $this->belongsTo(RequestStatus::class, 'request_status_id');
     }
 
     /**
