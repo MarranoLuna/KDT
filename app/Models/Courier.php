@@ -17,7 +17,9 @@ class Courier extends Model
         'start_date',
         'dni',
         'is_validated',
-        'balance'
+        'balance',
+        'dni_frente_path',
+        'dni_dorso_path'
     ];
     
     protected $casts = [

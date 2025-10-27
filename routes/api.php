@@ -10,6 +10,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\MotorcycleBrandController;
 use App\Http\Controllers\BicycleBrandController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\CourierController;
 
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -25,9 +26,7 @@ Route::get('/bicycle-brands', [BicycleBrandController::class, 'index']);
 Route::get('/motorcycle-brands', [MotorcycleBrandController::class, 'index']);
 
 
-
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::post('/requests/create', [RequestController::class, 'store']);
     Route::get('/requests', [RequestController::class, 'index']);
     Route::put('/requests/{request}', [RequestController::class, 'update']);
@@ -38,9 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
-    
+    Route::post('/courier/register', [CourierController::class, 'courierRegistration']);
 });
-
 
 
 // Ruta para obtener los datos de un usuario por su ID
