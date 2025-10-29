@@ -18,7 +18,7 @@ class Offer extends Model
     // Relación con Courier
     public function courier()
     {
-        return $this->belongsTo(Courier::class);
+        return $this->belongsTo(User::class, 'courier_id');
     }
 
     // Relación con Request
@@ -32,4 +32,9 @@ class Offer extends Model
     {
         return $this->hasOne(Order::class);
     }
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'courier_id');
+}
 }

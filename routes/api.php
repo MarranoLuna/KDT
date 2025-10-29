@@ -11,6 +11,8 @@ use App\Http\Controllers\MotorcycleBrandController;
 use App\Http\Controllers\BicycleBrandController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CourierController;
+use App\Http\Controllers\OrderController;
+
 
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -33,11 +35,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/requests/{request}', [RequestController::class, 'destroy']);
     Route::get('/requests/available', [RequestController::class, 'availableForKdt']);
     Route::post('/requests/{request}/offers', [OfferController::class, 'store']);
+    Route::get('/requests/{request}/offers', [RequestController::class, 'showOffers']);
+    Route::post('/requests/{request}/offers/{offer}/accept', [RequestController::class, 'acceptOffer']);
     Route::get('/addresses', [AddressController::class, 'index']);
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
     Route::post('/courier/register', [CourierController::class, 'courierRegistration']);
+    Route::get('/orders', [OrderController::class, 'index']);
 });
 
 

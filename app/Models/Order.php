@@ -26,10 +26,14 @@ class Order extends Model
         return $this->belongsTo(Offer::class);
     }
 
-    // Relación con Rating (un pedido puede tener una calificación)
+
     public function rating()
     {
         return $this->hasOne(Rating::class);
     }
 
+    public function courier()
+{
+    return $this->belongsTo(User::class, 'courier_id');
+}
 }

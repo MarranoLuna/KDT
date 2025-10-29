@@ -50,6 +50,15 @@ class UsersSeeder extends Seeder
                 'email_verified_at' => now(),
                 'role_id' => 2,
             ],
+             [
+                'email' => 'cadete@gmail.com',
+                'firstname' => "Pepito",
+                'lastname' => "Flores",
+                'password' => "1234",
+                'birthday' =>'1996-04-26',
+                'email_verified_at' => now(),
+                'role_id' => 2,
+            ],
         ];
 
         foreach ($usuarios as $data) {
