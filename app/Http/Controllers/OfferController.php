@@ -55,6 +55,7 @@ class OfferController extends Controller
             'courier_id' => $kdt->id,
             'request_id' => $request->id,    
         ]);
+        $request->update(['request_status_id' => 2]);
         return response()->json($offer, 201);
     }
 

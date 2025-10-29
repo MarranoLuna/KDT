@@ -7,16 +7,22 @@ use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Address; 
-use App\Models\Request;  
+use App\Models\Request as RequestModel;  
+use App\Models\Offer;  
+use App\Models\Order;  
+use App\Models\User;  
 
 class RequestController extends Controller
 {
       public function index()
     {
-        $requests = Request::where('user_id', Auth::id())
-            ->with('originAddress', 'destinationAddress', 'status') // Carga las direcciones asociadas
-            ->latest() 
-            ->get();
+        $requests = RequestModel::where('user_id', Auth::id())
+            
+                       
+                 ->whereIn('request_status_id', [1, 2]) 
+                 ->with(['originAddress', 'destinationAddress', 'status'])
+                 ->latest()
+                 ->get();
 
         return response()->json($requests);
 
@@ -63,7 +69,7 @@ class RequestController extends Controller
 			*/
 
 			//  CREAR LA SOLICITUD
-			$newRequest = Request::create([
+			$newRequest = RequestModel::create([
                 'title' => $data['title'],
 				'description' => $data['description'],
 				'payment_method' => $data['payment_method'],
@@ -102,7 +108,7 @@ class RequestController extends Controller
     }
 
    
-	public function update(HttpRequest $httpRequest, Request $request){
+	public function update(HttpRequest $httpRequest, RequestModel $request){
 		
 		if (Auth::id() !== $request->user_id) {
 			return response()->json(['message' => 'No autorizado'], 403);
@@ -141,7 +147,7 @@ class RequestController extends Controller
 	}
 
     
-    public function destroy(Request $request)
+    public function destroy(RequestModel $request)
     {
        
         if (Auth::id() !== $request->user_id) {
@@ -158,7 +164,7 @@ class RequestController extends Controller
     {
        $kdtId = Auth::id();
 
-    $requests = Request::whereIn('request_status_id', [1, 2])
+    $requests = RequestModel::whereIn('request_status_id', [1, 2])
                         ->with([
                             'originAddress', 
                             'destinationAddress', 
@@ -177,4 +183,51 @@ class RequestController extends Controller
 
     return response()->json($requests);
     }
+
+    public function showOffers(RequestModel $request)
+    {
+        if (Auth::id() !== $request->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $offers = $request->offers()->with('courier')->get();
+        return response()->json($offers);
+    }
+
+    public function acceptOffer(RequestModel $request, Offer $offer)
+    {
+    
+        if (Auth::id() !== $request->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+        if ($offer->request_id !== $request->id) {
+            return response()->json(['message' => 'Oferta inválida'], 422);
+        }
+        if (!in_array($request->request_status_id, [1, 2])) {
+             return response()->json(['message' => 'Esta solicitud ya no puede aceptar ofertas.'], 409);
+        }
+
+        
+        $request->update(['request_status_id' => 3]);
+
+        
+        $order = Order::create([
+            'offer_id'        => $offer->id,
+            'order_status_id' => 1, 
+            'is_completed'    => false,
+        ]);
+    
+        // 4. rechaza las otras ofertas - falta poner 'rechazada' eb BD
+        //Offer::where('request_id', $request->id)
+        //    ->where('id', '!=', $offer->id)
+        //     ->whereNull('status') 
+         //    ->update(['status' => 'rechazada']); 
+
+        
+        return response()->json([
+            'message' => '¡Oferta aceptada! El pedido ha sido creado.',
+            'order' => $order->load('offer.courier') 
+        ]);
+    }
+    
 }
