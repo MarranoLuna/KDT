@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Address; 
+use App\Models\Role; 
 
 
 

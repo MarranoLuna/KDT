@@ -25,10 +25,7 @@ class RequestController extends Controller
                  ->get();
 
         return response()->json($requests);
-
-        
     }
-
 
 
     public function store(HttpRequest $httpRequest)
