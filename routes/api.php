@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
     Route::post('/courier/register', [CourierController::class, 'courierRegistration']);
+    Route::post('/courier/toggle-status', [CourierController::class, 'toggleStatus']);
     Route::get('/orders', [OrderController::class, 'index']);
 });
 

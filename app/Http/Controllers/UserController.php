@@ -101,4 +101,29 @@ class UserController extends Controller
     {
         //
     }
+
+    public function toggleStatus(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            $courier = $user->courier; 
+            
+
+            if (!$courier) {
+                return response()->json(['message' => 'Perfil de cadete no encontrado.'], 404);
+            }
+            $courier->status = !$courier->status;
+            
+            $courier->save();
+
+            return response()->json([
+                'message' => 'Estado actualizado correctamente.',
+                'new_status' => $courier->status 
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al actualizar el estado.'], 500);
+        }
+    }
 }
