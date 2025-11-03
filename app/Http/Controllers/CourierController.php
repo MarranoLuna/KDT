@@ -115,6 +115,38 @@ public function courierRegistration(Request $request)
         }
     }
 
+
+    public function toggleStatus(Request $request)
+    {
+        try {
+
+            $user = $request->user();
+            //  encontrar cadete asociado
+            $courier = $user->courier; 
+            
+
+            if (!$courier) {
+                return response()->json(['message' => 'Perfil de cadete no encontrado.'], 404);
+            }
+
+            // invertir el estado 
+            $courier->status = !$courier->status;
+            $courier->save();
+
+
+            return response()->json([
+                'message' => 'Estado actualizado correctamente.',
+                'new_status' => $courier->status 
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el estado.',
+                'error' => $e->getMessage() 
+            ], 500);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */
