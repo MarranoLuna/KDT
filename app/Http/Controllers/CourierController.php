@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
+use App\Models\OrderStatus;
 
 
 class CourierController extends Controller
@@ -145,6 +147,69 @@ public function courierRegistration(Request $request)
                 'error' => $e->getMessage() 
             ], 500);
         }
+    }
+
+    public function getActiveOrder(Request $request)
+    {
+        $courier = $request->user()->courier; 
+        
+        if (!$courier) {
+             return response()->json(['message' => 'Perfil de cadete no encontrado'], 404);
+        }
+
+        //  Busca una orden que:
+        //    a) Pertenezca a una oferta hecha por ESTE cadete.
+        //    b) NO esté marcada como 'is_completed'.
+        $activeOrder = Order::whereHas('offer', function ($query) use ($courier) {
+        $query->where('courier_id', $courier->id);
+        })
+        ->where('is_completed', false)
+        ->with([ 
+            'status', 
+            'offer', 
+            'offer.request', 
+            'offer.request.user', 
+            'offer.request.origin_address', 
+            'offer.request.destination_address' 
+])
+->first();
+
+    
+       if ($activeOrder) {
+    // Si encontramos un pedido, lo devolvemos con 200 OK
+    return response()->json($activeOrder);
+}
+
+// Si $activeOrder es null, devolvemos un 204 "No Content".
+// Angular interpretará esto como 'null' o 'undefined'.
+return response(null, 204);
+    }
+
+    public function getMyOrders(Request $request)
+    {
+        $courier = $request->user()->courier; 
+        if (!$courier) { return response()->json([]); }
+        
+        // estado "en Proceso" 
+        $statusEnProcesoId = 1; 
+
+        $myOrders = Order::where('order_status_id', $statusEnProcesoId) 
+            ->whereHas('offer', function ($query) use ($courier) {
+                
+                $query->where('courier_id', $courier->id);
+            })
+            ->with([ 
+                'status',
+                'offer',
+                'offer.courier',
+                'offer.request',
+                'offer.request.originAddress', 
+                'offer.request.destinationAddress'
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get(); 
+
+        return response()->json($myOrders);
     }
 
     /**

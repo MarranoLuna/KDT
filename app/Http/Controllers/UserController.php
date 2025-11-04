@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Validation\Rules\Password;
+use App\Models\Order;
 
 
 class UserController extends Controller
@@ -17,6 +18,30 @@ class UserController extends Controller
     public function index()
     {
         //
+    }
+
+    public function getMyOrders(Request $request)
+    {
+        $user = $request->user(); // Obtiene el CLIENTE logueado
+
+        // Buscamos órdenes...
+        $myOrders = Order::whereHas('offer.request', function ($query) use ($user) {
+            // ...donde la 'request' asociada...
+            // ...pertenezca a ESTE cliente ($user->id)
+            $query->where('user_id', $user->id);
+        })
+        ->with([ // Cargamos las mismas relaciones que SÍ funcionan en tu HTML
+            'status',
+            'offer',
+            'offer.courier', // El 'courier' (que es un User)
+            'offer.request',
+            'offer.request.originAddress',
+            'offer.request.destinationAddress'
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return response()->json($myOrders);
     }
 
     /**
