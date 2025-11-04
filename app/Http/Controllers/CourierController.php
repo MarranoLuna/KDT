@@ -150,18 +150,16 @@ public function courierRegistration(Request $request)
 
     public function getActiveOrder(Request $request)
     {
-        // 1. Obtenemos el USUARIO logueado (Patricio)
         $user = $request->user();
 
-        // 2. Buscamos una orden...
+        // busca una orden...
         $activeOrder = Order::where('is_completed', false) // ...que no esté completada
             ->whereHas('offer', function ($query) use ($user) {
                 
-                // 3. ...donde la 'courier_id' de la oferta (que es un user_id)...
-                //    ...coincida con el ID del USUARIO logueado.
+                //  ...donde la 'courier_id' de la oferta coincida con el ID del USUARIO logueado.
                 $query->where('courier_id', $user->id); 
             })
-            ->with([ // 4. Carga todas las relaciones (usando camelCase como definimos)
+            ->with([ 
                 'status',
                 'offer',
                 'offer.request',
@@ -171,13 +169,12 @@ public function courierRegistration(Request $request)
             ])
             ->first(); // Devuelve el primer pedido que encuentra (o null)
 
-        // 5. Devuelve la orden (o 'null' si no hay nada)
+        //  orden 
         if ($activeOrder) {
             return response()->json($activeOrder);
         }
         
-        // Si no se encuentra nada, devuelve un 204 "No Content"
-        // Esto hará que tu app de Ionic reciba 'null'
+
         return response(null, 204);
     }
 
@@ -207,6 +204,32 @@ public function courierRegistration(Request $request)
             ->get(); 
 
         return response()->json($myOrders);
+    }
+
+    public function getOrderHistory(Request $request)
+    {
+        $user = $request->user(); 
+        if (!$user->courier) { return response()->json([]); } // Seguridad
+
+        // busca todas las órdenes del kdt
+        $historyOrders = Order::where('is_completed', true) 
+            ->whereHas('offer', function ($query) use ($user) {
+                
+                $query->where('courier_id', $user->id); 
+            })
+            ->with([ 
+                'status',
+                'offer',
+                'offer.request',
+                'offer.request.user',
+                'offer.request.originAddress', 
+                'offer.request.destinationAddress'
+            ])
+            ->orderBy('updated_at', 'desc') 
+            ->get(); 
+
+
+        return response()->json($historyOrders);
     }
 
     /**

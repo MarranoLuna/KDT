@@ -228,5 +228,12 @@ class RequestController extends Controller
             'order' => $order->load('offer.courier') 
         ]);
     }
+
+    public function getAvailableCount(Request $request)
+    {
+        $count = RequestModel::whereIn('request_status_id', [1, 2])->count();
+        
+        return response()->json(['available_count' => $count]);
+    }
     
 }
