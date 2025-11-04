@@ -40,10 +40,8 @@ class VehicleFactory extends Factory
 
         return [
             'model' => $this->faker->word(),
-            'year' => $this->faker->year(),
             'color' => $this->faker->safeColorName(),
             'registration_plate' => strtoupper($this->faker->bothify('??###??')),
-            'permission' => $this->faker->randomElement(['Nacional', 'Provincial']),
             'is_validated' => $this->faker->boolean(),
             'vehicle_type_id' => $vehicleType->id,
             'motorcycle_brand_id' => $brandData['motorcycle_brand_id'],
