@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Request;
+use App\Models\Courier;
+use App\Models\User;
 
 class Offer extends Model
 {
@@ -20,6 +23,7 @@ class Offer extends Model
     {
         return $this->belongsTo(User::class, 'courier_id');
     }
+
 
     // Relación con Request
     public function request()

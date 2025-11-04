@@ -45,6 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/courier/register', [CourierController::class, 'courierRegistration']);
     Route::post('/courier/toggle-status', [CourierController::class, 'toggleStatus']);
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/courier/active-order', [CourierController::class, 'getActiveOrder']);
+    Route::post('/orders/{order}/complete', [OrderController::class, 'completeOrder']);
+    Route::get('/orders/{order}/details', [OrderController::class, 'getDetails']);
+    Route::get('/courier/my-orders', [CourierController::class, 'getMyOrders']);
+    Route::get('/user/my-orders', [UserController::class, 'getMyOrders']);
+
 });
 
 

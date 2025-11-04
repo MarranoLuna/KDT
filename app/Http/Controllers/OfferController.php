@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Request as RequestModel; 
 use App\Models\Offer;
+use App\Models\OrderStatus; 
+use App\Models\RequestStatus;
 use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;

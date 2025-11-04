@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Address;
+use App\Models\User;
+
 
 class Request extends Model
 {
@@ -70,6 +73,6 @@ class Request extends Model
     {
         return $this->belongsTo(Address::class);
     }
-
+     
    
 }
