@@ -14,6 +14,18 @@ class Vehicle extends Model
     /** @use HasFactory<\Database\Factories\VehicleFactory> */
     use HasFactory;
     /** Relacion una marca un vehiculo  */
+
+    protected $fillable = [
+        'model',
+        'color',
+        'registration_plate',
+        'is_validated',
+        'vehicle_type_id',
+        'motorcycle_brand_id',
+        'bicycle_brand_id',
+        'courier_id',
+    ];
+
         public function motorcycleBrand()
     {
         return $this->belongsTo(MotorcycleBrand::class);
@@ -24,7 +36,6 @@ class Vehicle extends Model
         return $this->belongsTo(BicycleBrand::class);
     }
 
-    /** Relacion un tipo un vehiculo  */
     public function vehicleType()
     {
         return $this->hasOne('App\VehicleType');

@@ -12,7 +12,7 @@ use App\Http\Controllers\BicycleBrandController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\OrderController;
-
+use App\Http\Controllers\VehicleController;
 
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -50,6 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}/details', [OrderController::class, 'getDetails']);
     Route::get('/courier/my-orders', [CourierController::class, 'getMyOrders']);
     Route::get('/user/my-orders', [UserController::class, 'getMyOrders']);
+    Route::post('/vehicles/register-bicycle', [VehicleController::class, 'storeBicycle']);
+    Route::post('/vehicles/register-motorcycle', [VehicleController::class, 'storeMotorcycle']);
 
 });
 
