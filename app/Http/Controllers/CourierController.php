@@ -150,39 +150,37 @@ public function courierRegistration(Request $request)
 
     public function getActiveOrder(Request $request)
     {
-        $courier = $request->user()->courier; 
-        
-        if (!$courier) {
-             return response()->json(['message' => 'Perfil de cadete no encontrado'], 404);
+        // 1. Obtenemos el USUARIO logueado (Patricio)
+        $user = $request->user();
+
+        // 2. Buscamos una orden...
+        $activeOrder = Order::where('is_completed', false) // ...que no esté completada
+            ->whereHas('offer', function ($query) use ($user) {
+                
+                // 3. ...donde la 'courier_id' de la oferta (que es un user_id)...
+                //    ...coincida con el ID del USUARIO logueado.
+                $query->where('courier_id', $user->id); 
+            })
+            ->with([ // 4. Carga todas las relaciones (usando camelCase como definimos)
+                'status',
+                'offer',
+                'offer.request',
+                'offer.request.user',
+                'offer.request.originAddress', 
+                'offer.request.destinationAddress'
+            ])
+            ->first(); // Devuelve el primer pedido que encuentra (o null)
+
+        // 5. Devuelve la orden (o 'null' si no hay nada)
+        if ($activeOrder) {
+            return response()->json($activeOrder);
         }
-
-        //  Busca una orden que:
-        //    a) Pertenezca a una oferta hecha por ESTE cadete.
-        //    b) NO esté marcada como 'is_completed'.
-        $activeOrder = Order::whereHas('offer', function ($query) use ($courier) {
-        $query->where('courier_id', $courier->id);
-        })
-        ->where('is_completed', false)
-        ->with([ 
-            'status', 
-            'offer', 
-            'offer.request', 
-            'offer.request.user', 
-            'offer.request.origin_address', 
-            'offer.request.destination_address' 
-])
-->first();
-
-    
-       if ($activeOrder) {
-    // Si encontramos un pedido, lo devolvemos con 200 OK
-    return response()->json($activeOrder);
-}
-
-// Si $activeOrder es null, devolvemos un 204 "No Content".
-// Angular interpretará esto como 'null' o 'undefined'.
-return response(null, 204);
+        
+        // Si no se encuentra nada, devuelve un 204 "No Content"
+        // Esto hará que tu app de Ionic reciba 'null'
+        return response(null, 204);
     }
+
 
     public function getMyOrders(Request $request)
     {
