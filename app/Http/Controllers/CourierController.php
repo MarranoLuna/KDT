@@ -53,12 +53,11 @@ class CourierController extends Controller
 }
 
 
-
 public function courierRegistration(Request $request)
     {
         // 1. Validar los datos 
     $validatedData = $request->validate([
-        'dni' => 'required|string|max:8', // Ajustado a max:8
+        'dni' => 'required|string|max:8', 
         'dni_frente_base64' => 'required|string',
         'dni_dorso_base64' => 'required|string',
     ]);

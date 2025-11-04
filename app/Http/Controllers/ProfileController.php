@@ -57,4 +57,13 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function userProfile(Request $request)
+{
+    $user = $request->user();
+
+    $user->load('courier'); 
+
+    return response()->json($user);
+}
 }
