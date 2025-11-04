@@ -5,12 +5,61 @@ namespace App\Http\Controllers;
 use App\Models\Vehicle;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function storeBicycle(Request $request)
+    {
+        $user = Auth::user();
+        $courier = $user->courier;
+
+        $bicycle_type_id = 2; 
+
+        $vehicle = Vehicle::create([
+            'color' => $request->color,
+            'bicycle_brand_id' => $request->brand_id,
+            'vehicle_type_id' => $bicycle_type_id,
+            'courier_id' => $courier->id,
+        ]);
+
+        return response()->json($vehicle, 201);
+    }
+
+
+    public function storeMotorcycle(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'registration_plate' => 'required|string|max:10|unique:vehicles', 
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = Auth::user(); 
+        $courier = $user->courier;
+
+        $motorcycle_type_id = 1; 
+
+        $vehicle = Vehicle::create([
+            'model' => $request->model,
+            'color' => $request->color,
+            'registration_plate' => $request->registration_plate,
+            'motorcycle_brand_id' => $request->brand_id,
+            'vehicle_type_id' => $motorcycle_type_id,
+            'courier_id' => $courier->id,
+        ]);
+
+        return response()->json($vehicle, 201);
+    }
+
     public function index()
     {
         //
