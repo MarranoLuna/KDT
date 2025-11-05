@@ -55,12 +55,11 @@ class CourierController extends Controller
 }
 
 
-
 public function courierRegistration(Request $request)
     {
         // 1. Validar los datos 
     $validatedData = $request->validate([
-        'dni' => 'required|string|max:8', // Ajustado a max:8
+        'dni' => 'required|string|max:8', 
         'dni_frente_base64' => 'required|string',
         'dni_dorso_base64' => 'required|string',
     ]);
@@ -151,39 +150,34 @@ public function courierRegistration(Request $request)
 
     public function getActiveOrder(Request $request)
     {
-        $courier = $request->user()->courier; 
-        
-        if (!$courier) {
-             return response()->json(['message' => 'Perfil de cadete no encontrado'], 404);
+        $user = $request->user();
+
+        // busca una orden...
+        $activeOrder = Order::where('is_completed', false) // ...que no esté completada
+            ->whereHas('offer', function ($query) use ($user) {
+                
+                //  ...donde la 'courier_id' de la oferta coincida con el ID del USUARIO logueado.
+                $query->where('courier_id', $user->id); 
+            })
+            ->with([ 
+                'status',
+                'offer',
+                'offer.request',
+                'offer.request.user',
+                'offer.request.originAddress', 
+                'offer.request.destinationAddress'
+            ])
+            ->first(); // Devuelve el primer pedido que encuentra (o null)
+
+        //  orden 
+        if ($activeOrder) {
+            return response()->json($activeOrder);
         }
+        
 
-        //  Busca una orden que:
-        //    a) Pertenezca a una oferta hecha por ESTE cadete.
-        //    b) NO esté marcada como 'is_completed'.
-        $activeOrder = Order::whereHas('offer', function ($query) use ($courier) {
-        $query->where('courier_id', $courier->id);
-        })
-        ->where('is_completed', false)
-        ->with([ 
-            'status', 
-            'offer', 
-            'offer.request', 
-            'offer.request.user', 
-            'offer.request.origin_address', 
-            'offer.request.destination_address' 
-])
-->first();
-
-    
-       if ($activeOrder) {
-    // Si encontramos un pedido, lo devolvemos con 200 OK
-    return response()->json($activeOrder);
-}
-
-// Si $activeOrder es null, devolvemos un 204 "No Content".
-// Angular interpretará esto como 'null' o 'undefined'.
-return response(null, 204);
+        return response(null, 204);
     }
+
 
     public function getMyOrders(Request $request)
     {
@@ -210,6 +204,32 @@ return response(null, 204);
             ->get(); 
 
         return response()->json($myOrders);
+    }
+
+    public function getOrderHistory(Request $request)
+    {
+        $user = $request->user(); 
+        if (!$user->courier) { return response()->json([]); } // Seguridad
+
+        // busca todas las órdenes del kdt
+        $historyOrders = Order::where('is_completed', true) 
+            ->whereHas('offer', function ($query) use ($user) {
+                
+                $query->where('courier_id', $user->id); 
+            })
+            ->with([ 
+                'status',
+                'offer',
+                'offer.request',
+                'offer.request.user',
+                'offer.request.originAddress', 
+                'offer.request.destinationAddress'
+            ])
+            ->orderBy('updated_at', 'desc') 
+            ->get(); 
+
+
+        return response()->json($historyOrders);
     }
 
     /**

@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
         $table->id();
-        $table->string('model', 50);
-        $table->integer('year');
+        $table->string('model', 50)->nullable();
         $table->string('color', 20);
-        $table->string('registration_plate', 10);
-        $table->string('permission', 50);
+        $table->string('registration_plate', 10)->nullable();
         $table->boolean('is_validated')->default(false);
         $table->foreignId('vehicle_type_id')->constrained();
         $table->foreignId('motorcycle_brand_id')->nullable()->constrained();

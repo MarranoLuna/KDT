@@ -30,15 +30,19 @@ class OrderController extends Controller
 
     public function completeOrder(Request $request, Order $order)
     {
+        $user = $request->user();
         
-        $courier = $request->user()->courier;
-        if ($order->offer->courier_id !== $courier->id) {
+        $order->load('offer'); 
+
+        
+        if ($order->offer->courier_id !== $user->id) {
             return response()->json(['message' => 'No autorizado para esta acción'], 403);
         }
 
+        $statusCompletada = OrderStatus::where('name', 'completada')->firstOrFail();
         
         $order->update([
-            'order_status_id' => 2, 
+            'order_status_id' => $statusCompletada->id,
             'is_completed' => true
         ]);
 
@@ -47,19 +51,23 @@ class OrderController extends Controller
 
     public function getDetails(Request $request, Order $order)
     {
-        // Validación de seguridad
-        $courier = $request->user()->courier;
-        if ($order->offer->courier_id !== $courier->id) {
+        $user = $request->user(); 
+
+        
+        $order->load('offer');
+
+        
+        if ($order->offer->courier_id !== $user->id) { 
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
+        
         $orderData = $order->load([
             'status',
-            'offer',
             'offer.request',
             'offer.request.user',
-            'offer.request.origin_address',
-            'offer.request.destination_address'
+            'offer.request.originAddress',
+            'offer.request.destinationAddress'
         ]);
 
         return response()->json($orderData);
