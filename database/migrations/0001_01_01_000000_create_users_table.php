@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            /// adaptar a nuestro user y en el seeder crear user para mi, luna y eli.
             $table->id();
             $table->string('email')->unique();
             $table->string('firstname');
@@ -21,6 +20,7 @@ return new class extends Migration
             $table->date('birthday');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
+            $table->string("push_token")->nullable();
             $table->timestamps();
         });
 

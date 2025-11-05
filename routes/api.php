@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}/details', [OrderController::class, 'getDetails']);
     Route::get('/courier/my-orders', [CourierController::class, 'getMyOrders']);
     Route::get('/user/my-orders', [UserController::class, 'getMyOrders']);
+    Route::post('/registerPushToken', [UserController::class,'savePushToken']);
 
     Route::get('/courier/order-history', [CourierController::class, 'getOrderHistory']);
     Route::get('/requests/available-count', [RequestController::class, 'getAvailableCount']);

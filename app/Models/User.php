@@ -8,8 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Address; 
-use App\Models\Role; 
+use App\Models\Address;
+use App\Models\Role;
 
 
 
@@ -19,7 +19,7 @@ use App\Models\Role;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory,HasApiTokens, Notifiable;
+    use HasFactory, HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -63,21 +63,21 @@ class User extends Authenticatable
     }
     public function admin()
     {
-    return $this->hasOne(Admin::class);
+        return $this->hasOne(Admin::class);
     }
 
-     public function requests()
+    public function requests()
     {
         return $this->hasMany(Request::class);
     }
 
-     public function courier()
+    public function courier()
     {
         return $this->hasOne(Courier::class);
     }
 
     public function role()
-{
-    return $this->belongsTo(Role::class);
-}
+    {
+        return $this->belongsTo(Role::class);
+    }
 }
