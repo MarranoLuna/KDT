@@ -20,6 +20,7 @@ class Vehicle extends Model
         'color',
         'registration_plate',
         'is_validated',
+        'is_selected',
         'vehicle_type_id',
         'motorcycle_brand_id',
         'bicycle_brand_id',

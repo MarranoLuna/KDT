@@ -17,6 +17,7 @@ return new class extends Migration
         $table->string('color', 20);
         $table->string('registration_plate', 10)->nullable();
         $table->boolean('is_validated')->default(false);
+        $table->boolean('is_selected')->default(false);
         $table->foreignId('vehicle_type_id')->constrained();
         $table->foreignId('motorcycle_brand_id')->nullable()->constrained();
         $table->foreignId('bicycle_brand_id')->nullable()->constrained();
