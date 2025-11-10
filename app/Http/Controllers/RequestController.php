@@ -167,6 +167,7 @@ class RequestController extends Controller
             ->with([
                 'originAddress',
                 'destinationAddress',
+                'description',
                 'status',
                 'address',
                 'user',
