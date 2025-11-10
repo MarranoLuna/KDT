@@ -19,7 +19,7 @@ class VehicleController extends Controller
         $user = Auth::user();
         $courier = $user->courier;
 
-        $bicycle_type_id = 2; 
+        $bicycle_type_id = 2;
 
         $vehicle = Vehicle::create([
             'color' => $request->color,
@@ -36,17 +36,17 @@ class VehicleController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'registration_plate' => 'required|string|max:10|unique:vehicles', 
+            'registration_plate' => 'required|string|max:10|unique:vehicles',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user = Auth::user(); 
+        $user = Auth::user();
         $courier = $user->courier;
 
-        $motorcycle_type_id = 1; 
+        $motorcycle_type_id = 1;
 
         $vehicle = Vehicle::create([
             'model' => $request->model,
@@ -62,8 +62,17 @@ class VehicleController extends Controller
 
     public function index()
     {
-        //
+        $id = Auth::id();
+
+        $vehicles = Vehicle::where('courier_id', $id)
+            ->with([
+                'vehicleType', 
+                'bicycleBrand', 
+                'motorcycleBrand'
+            ])->get();
+        return response()->json($vehicles);
     }
+
 
     /**
      * Show the form for creating a new resource.

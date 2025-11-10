@@ -38,7 +38,7 @@ class Vehicle extends Model
 
     public function vehicleType()
     {
-        return $this->hasOne('App\VehicleType');
+        return $this->belongsTo(VehicleType::class);
     }
 
     public function documents()
@@ -46,10 +46,6 @@ class Vehicle extends Model
     return $this->hasMany(VehicleDoc::class);
     }
 
-    public function type()
-    {
-    return $this->belongsTo(VehicleType::class,'vehicle_type_id');
-    }
 
     public function courier()
     {
