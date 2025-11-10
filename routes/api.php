@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/requests/{request}', [RequestController::class, 'update']);
     Route::delete('/requests/{request}', [RequestController::class, 'destroy']);
     Route::get('/requests/available', [RequestController::class, 'availableForKdt']);
-    Route::post('/requests/{request}/offers', [OfferController::class, 'store']);
+    Route::post('/requests/{request}/offers_1', [OfferController::class, 'store']);//// Cambiar nombre para confundir a laravel con la ruta get
     Route::get('/requests/{request}/offers', [RequestController::class, 'showOffers']);
     Route::post('/requests/{request}/offers/{offer}/accept', [RequestController::class, 'acceptOffer']);
     Route::get('/addresses', [AddressController::class, 'index']);
@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}/details', [OrderController::class, 'getDetails']);
     Route::get('/courier/my-orders', [CourierController::class, 'getMyOrders']);
     Route::get('/user/my-orders', [UserController::class, 'getMyOrders']);
-    Route::get('/courier/earnings', [CourierController::class, 'getEarnings']);
+
     Route::get('/courier/order-history', [CourierController::class, 'getOrderHistory']);
     Route::get('/requests/available-count', [RequestController::class, 'getAvailableCount']);
 
