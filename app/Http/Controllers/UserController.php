@@ -10,6 +10,8 @@ use Illuminate\Validation\Rules\Password;
 use App\Models\Order;
 use Illuminate\Support\Facades\Storage; 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
 
 
 class UserController extends Controller
@@ -195,6 +197,24 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al actualizar el estado.'], 500);
+        }
+    }
+
+    public function savePushToken(Request $request){
+
+        try {
+            $data = $request->all();
+            $user = Auth::user(); //obtiene el usuario autenticado 
+            $user->push_token = $data['push_token'];
+            $user->save();
+            $user = $user->fresh(); 
+            if($user["push_token"] == $data["push_token"]){
+                return response()->json(['success' => true, "message"=> "Token de notificaciones guardado correctamente", "user"=> $user],200);
+            } else{
+                return response()->json(['success' => false, "message"=> "Error al guardar el token de notificaciones","user"=> $user],500);
+            }
+        }catch (\Exception $e) {
+            return response()->json(['success' => false,'message' => "Error al guardar el token de notificaciones"], 500);
         }
     }
 }

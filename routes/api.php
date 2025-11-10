@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
@@ -35,8 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/requests/{request}', [RequestController::class, 'update']);
     Route::delete('/requests/{request}', [RequestController::class, 'destroy']);
     Route::get('/requests/available', [RequestController::class, 'availableForKdt']);
-    Route::post('/requests/{request}/offers', [OfferController::class, 'store']);
+
     Route::get('/requests/{request}/offers', [RequestController::class, 'showOffers']);
+    Route::post('/requests/{request}/offers', [OfferController::class, 'store']);
     Route::post('/requests/{request}/offers/{offer}/accept', [RequestController::class, 'acceptOffer']);
     Route::get('/addresses', [AddressController::class, 'index']);
     Route::post('/addresses', [AddressController::class, 'store']);
