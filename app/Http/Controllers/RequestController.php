@@ -228,4 +228,12 @@ class RequestController extends Controller
         ]);
     }
 
+
+    public function getAvailableCount()
+    {
+        $count = RequestModel::whereIn('request_status_id', [1, 2])->count();
+        
+        return response()->json(['available_count' => $count]);
+    }
+   
 }
