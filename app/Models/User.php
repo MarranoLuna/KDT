@@ -10,10 +10,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Address; 
 use App\Models\Role; 
-
-
-
-
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 
 class User extends Authenticatable
@@ -32,6 +30,7 @@ class User extends Authenticatable
         'lastname',
         'password',
         'birthday',
+        'avatar',
     ];
 
     /**
@@ -49,6 +48,25 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+    public function getAvatarAttribute($value)
+    {
+        // Si el valor en la BD es null, devuelve null.
+        if (!$value) {
+            return null;
+        }
+
+        // Si el valor ya es una URL completa (http://...), devuélvelo tal cual.
+        if (Str::startsWith($value, 'http')) {
+            return $value;
+        }
+
+        // Si es un path relativo (ej: /storage/avatars/...),
+        // antepone la URL base de tu app (ej: https://miapi.com)
+        // 'URL::to($value)' hace esto automáticamente.
+        return URL::to($value);
+    }
+
     protected function casts(): array
     {
         return [
