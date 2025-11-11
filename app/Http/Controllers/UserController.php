@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Validation\Rules\Password;
 use App\Models\Order;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+
 
 
 class UserController extends Controller
@@ -81,41 +83,85 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+   public function update(Request $request, User $user)
     {
-        $user->update($request->all());
+        // 1. Validar los datos que vienen del formulario
+        $validatedData = $request->validate([
+            'firstname' => 'sometimes|string|max:255',
+            'lastname'  => 'sometimes|string|max:255',
+            'email'     => 'sometimes|email|unique:users,email,' . $user->id,
+            'birthday'  => 'sometimes|date',
+            'avatar'    => 'string|nullable', // Recibimos el avatar como string
+            // No valides 'password' aquí
+        ]);
+
+        $avatarData = $validatedData['avatar'] ?? null;
+
+        // --- 2. Lógica para guardar el avatar ---
+        
+        // Revisa si 'avatar' es una cadena Base64
+        if ($avatarData && Str::startsWith($avatarData, 'data:image')) {
+            
+            // Separa el tipo de imagen (ej: 'image/jpeg') y los datos base64
+            list($type, $data) = explode(';', $avatarData);
+            list(, $data)      = explode(',', $data);
+            
+            // Decodifica el Base64
+            $imageData = base64_decode($data);
+            
+            // Obtiene la extensión (ej: 'png', 'jpeg')
+            $extension = explode('/', $type)[1];
+            
+            // Genera un nombre de archivo único
+            $filename = 'avatars/' . $user->id . '_' . time() . '.' . $extension;
+            
+            // Guarda el archivo en el disco 'public'
+            // Esto lo guarda en 'storage/app/public/avatars/...'
+            Storage::disk('public')->put($filename, $imageData);
+            
+            // 4. Reemplaza el Base64 por la URL pública del archivo
+            // 'Storage::url' genera: '/storage/avatars/...'
+            $validatedData['avatar'] = Storage::url($filename);
+        }
+
+        // --- 3. Actualiza el usuario en la BD ---
+        // 'update' llenará los campos y los guardará
+        $user->update($validatedData);
+
+        // --- 4. Devuelve el usuario actualizado ---
+        // El frontend recibirá este objeto con la URL final del avatar
         return response()->json($user);
     }
 
+
     public function updatePassword(Request $request)
     {
-        // 1. Validar los datos que llegan desde Ionic
+        //  Validar SOLO los datos de contraseña
         $validatedData = $request->validate([
             'current_password' => 'required|string',
             'new_password' => [
                 'required',
                 'string',
-                'confirmed', // Esto busca un campo 'new_password_confirmation' y verifica que coincida
-                Password::min(8)->mixedCase()->numbers() // Reglas de contraseña fuertes
+                'confirmed', // Busca 'new_password_confirmation'
+                Password::min(8)->mixedCase()->numbers()
             ],
         ]);
 
-        // 2. Obtener el usuario que está haciendo la petición
+        // Obtener el usuario que está haciendo la petición
         $user = $request->user();
 
-        // 3. Verificar que la contraseña actual sea correcta 
+        // Verificar que la contraseña actual sea correcta 
         if (!Hash::check($validatedData['current_password'], $user->password)) {
-            // Si la contraseña no coincide, devolvemos un error de validación
             return response()->json([
                 'message' => 'La contraseña actual es incorrecta.'
-            ], 422); // 422 Unprocessable Entity
+            ], 422); 
         }
 
-        // 4. Hashear y guardar la nueva contraseña 
+        // Hashear y guardar la nueva contraseña 
         $user->password = Hash::make($validatedData['new_password']);
         $user->save();
 
-        // 5. Devolver una respuesta de éxito
+        //  Devolver una respuesta de éxito
         return response()->json([
             'message' => 'Contraseña actualizada exitosamente.'
         ]);

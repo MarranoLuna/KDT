@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('password');
             $table->date('birthday');
+            $table->string('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->string("push_token")->nullable();
