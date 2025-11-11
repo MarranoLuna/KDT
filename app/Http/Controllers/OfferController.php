@@ -54,7 +54,7 @@ class OfferController extends Controller
 
         $offer = Offer::create([
             'price'      => $httpRequest->price, 
-            'courier_id' => $kdt->id,
+            'courier_id' => $httpRequest->user()->id,
             'request_id' => $request->id,    
         ]);
         $request->update(['request_status_id' => 2]);
