@@ -43,6 +43,7 @@ class VehicleFactory extends Factory
             'color' => $this->faker->safeColorName(),
             'registration_plate' => strtoupper($this->faker->bothify('??###??')),
             'is_validated' => $this->faker->boolean(),
+            'is_selected' => false,
             'vehicle_type_id' => $vehicleType->id,
             'motorcycle_brand_id' => $brandData['motorcycle_brand_id'],
             'bicycle_brand_id' => $brandData['bicycle_brand_id'],

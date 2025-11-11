@@ -19,7 +19,7 @@ class VehicleController extends Controller
         $user = Auth::user();
         $courier = $user->courier;
 
-        $bicycle_type_id = 2; 
+        $bicycle_type_id = 2;
 
         $vehicle = Vehicle::create([
             'color' => $request->color,
@@ -36,17 +36,17 @@ class VehicleController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'registration_plate' => 'required|string|max:10|unique:vehicles', 
+            'registration_plate' => 'required|string|max:10|unique:vehicles',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user = Auth::user(); 
+        $user = Auth::user();
         $courier = $user->courier;
 
-        $motorcycle_type_id = 1; 
+        $motorcycle_type_id = 1;
 
         $vehicle = Vehicle::create([
             'model' => $request->model,
@@ -62,8 +62,17 @@ class VehicleController extends Controller
 
     public function index()
     {
-        //
+        $id = Auth::id();
+
+        $vehicles = Vehicle::where('courier_id', $id)
+            ->with([
+                'vehicleType',
+                'bicycleBrand',
+                'motorcycleBrand'
+            ])->get();
+        return response()->json($vehicles);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -108,8 +117,56 @@ class VehicleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Vehicle $vehicle)
+    public function destroy(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'vehicle_id' => 'required|integer|exists:vehicles,id'
+            ]);
+            $vehicle_id = $request->input('vehicle_id');
+            $user_id = Auth::id();
+
+            $vehicle = Vehicle::where('id', $vehicle_id)
+                ->where('courier_id', $user_id)
+                ->first();
+
+            if (!$vehicle) {
+                return response()->json(['success' => false,'message' => 'Vehículo no encontrado o no pertenece al usuario.'], 404);
+            } else{
+                $vehicle->delete();
+                return response()->json(['success' => true, "message" => "Vehículo eliminado correctamente"], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => "Error al eliminar de vehículo"], 500);
+
+        }
+    }
+
+    public function changeVehicle(Request $request)
+    {
+        try {
+            $request->validate([
+                'vehicle_id' => 'required|integer|exists:vehicles,id'
+            ]);
+
+            $vehicle_id = $request->input('vehicle_id');
+            $user_id = Auth::id();
+            $vehicles = Vehicle::where('courier_id', $user_id)->get();
+            foreach ($vehicles as $v) {
+                $v["is_selected"] = false;
+                $v->save();
+            }
+            $selected_vehicle = Vehicle::find($vehicle_id);
+            if ($selected_vehicle) {
+                $selected_vehicle->is_selected = true;
+                $selected_vehicle->save();
+                return response()->json(['success' => true, "message" => "Vehículo en uso actualizado correctamente"], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => "Error al cambiar de vehículo"], 500);
+
+        }
+
     }
 }
