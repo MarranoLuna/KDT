@@ -57,6 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/vehicles/register-bicycle', [VehicleController::class, 'storeBicycle']);
     Route::post('/vehicles/register-motorcycle', [VehicleController::class, 'storeMotorcycle']);
+    Route::get("/vehicles", action:[VehicleController::class,"index"]);
+    Route::post("/change_vehicle", [VehicleController::class,"changeVehicle"]);
+    Route::post("/delete_vehicle", [VehicleController::class,"destroy"]);
+
 
     Route::resource('users', UserController::class)->only([
         'show',   
