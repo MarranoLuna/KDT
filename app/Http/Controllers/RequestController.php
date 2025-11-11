@@ -167,8 +167,7 @@ class RequestController extends Controller
             ->with([
                 'originAddress',
                 'destinationAddress',
-                'status',
-                'address',
+                
                 'user',
                 'offers' => function ($query) use ($kdtId) {
                     $query->where('courier_id', $kdtId);
@@ -229,4 +228,12 @@ class RequestController extends Controller
         ]);
     }
 
+
+    public function getAvailableCount()
+    {
+        $count = RequestModel::whereIn('request_status_id', [1, 2])->count();
+        
+        return response()->json(['available_count' => $count]);
+    }
+   
 }
