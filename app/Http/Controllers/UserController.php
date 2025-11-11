@@ -40,8 +40,9 @@ class UserController extends Controller
             'offer.courier', // El 'courier' (que es un User)
             'offer.request',
             'offer.request.originAddress',
-            'offer.request.destinationAddress'
-        ])
+            'offer.request.destinationAddress',
+            'offer.courier.user'
+            ])
         ->orderBy('created_at', 'desc')
         ->get();
 

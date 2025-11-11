@@ -165,8 +165,9 @@ public function courierRegistration(Request $request)
                 'offer.request',
                 'offer.request.user',
                 'offer.request.originAddress', 
-                'offer.request.destinationAddress'
-            ])
+                'offer.request.destinationAddress',
+                'offer.courier.user'
+                ])
             ->first(); // Devuelve el primer pedido que encuentra (o null)
 
         //  orden 
