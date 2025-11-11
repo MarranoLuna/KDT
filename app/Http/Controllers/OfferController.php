@@ -44,14 +44,15 @@ class OfferController extends Controller
 
         $user = Auth::user();
 
+        $kdt = Courier::where('user_id', $user->id)->first();
 
-        $existingOffer = Offer::where('courier_id', $user->id)
+        $existingOffer = Offer::where('courier_id', $kdt->id)
             ->where('request_id', $request->id)
             ->first();
         if ($existingOffer) {
             return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
         }
-        $kdt = Courier::where('user_id', $user->id)->first();
+        
         /// Obtener el KDT y para llegar a su ID y así guardarloc on "courier_id" = id del courier
  
         $offer = Offer::create([
