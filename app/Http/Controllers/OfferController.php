@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Request as RequestModel; 
+use App\Models\Request as RequestModel;
 use App\Models\Offer;
-use App\Models\OrderStatus; 
-use App\Models\RequestStatus;
-use Illuminate\Http\Request; 
+use App\Models\OrderStatus;
+use App\Models\Courier;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -32,7 +32,7 @@ class OfferController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(Request $httpRequest, RequestModel $request) 
+    public function store(Request $httpRequest, RequestModel $request)
     {
         $validator = Validator::make($httpRequest->all(), [
             'price' => 'required|numeric|min:0',
@@ -42,27 +42,29 @@ class OfferController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $kdt = Auth::user();
+        $user = Auth::user();
 
-    
-    $existingOffer = Offer::where('courier_id', $kdt->id)
-                            ->where('request_id', $request->id)
-                            ->first(); 
-    if ($existingOffer) {
-        return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
-    }
 
+        $existingOffer = Offer::where('courier_id', $user->id)
+            ->where('request_id', $request->id)
+            ->first();
+        if ($existingOffer) {
+            return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
+        }
+        $kdt = Courier::where('user_id', $user->id)->first();
+        /// Obtener el KDT y para llegar a su ID y así guardarloc on "courier_id" = id del courier
+ 
         $offer = Offer::create([
-            'price'      => $httpRequest->price, 
-            'courier_id' => $httpRequest->user()->id,
-            'request_id' => $request->id,    
+            'price' => $httpRequest->price,
+            'courier_id' => $kdt->id,
+            'request_id' => $request->id,
         ]);
         $request->update(['request_status_id' => 2]);
         return response()->json($offer, 201);
     }
 
-       
-        
+
+
 
     /**
      * Display the specified resource.
