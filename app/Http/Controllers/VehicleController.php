@@ -66,8 +66,8 @@ class VehicleController extends Controller
 
         $vehicles = Vehicle::where('courier_id', $id)
             ->with([
-                'vehicleType', 
-                'bicycleBrand', 
+                'vehicleType',
+                'bicycleBrand',
                 'motorcycleBrand'
             ])->get();
         return response()->json($vehicles);
@@ -117,8 +117,56 @@ class VehicleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Vehicle $vehicle)
+    public function destroy(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'vehicle_id' => 'required|integer|exists:vehicles,id'
+            ]);
+            $vehicle_id = $request->input('vehicle_id');
+            $user_id = Auth::id();
+
+            $vehicle = Vehicle::where('id', $vehicle_id)
+                ->where('courier_id', $user_id)
+                ->first();
+
+            if (!$vehicle) {
+                return response()->json(['success' => false,'message' => 'Vehículo no encontrado o no pertenece al usuario.'], 404);
+            } else{
+                $vehicle->delete();
+                return response()->json(['success' => true, "message" => "Vehículo eliminado correctamente"], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => "Error al eliminar de vehículo"], 500);
+
+        }
+    }
+
+    public function changeVehicle(Request $request)
+    {
+        try {
+            $request->validate([
+                'vehicle_id' => 'required|integer|exists:vehicles,id'
+            ]);
+
+            $vehicle_id = $request->input('vehicle_id');
+            $user_id = Auth::id();
+            $vehicles = Vehicle::where('courier_id', $user_id)->get();
+            foreach ($vehicles as $v) {
+                $v["is_selected"] = false;
+                $v->save();
+            }
+            $selected_vehicle = Vehicle::find($vehicle_id);
+            if ($selected_vehicle) {
+                $selected_vehicle->is_selected = true;
+                $selected_vehicle->save();
+                return response()->json(['success' => true, "message" => "Vehículo en uso actualizado correctamente"], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => "Error al cambiar de vehículo"], 500);
+
+        }
+
     }
 }
