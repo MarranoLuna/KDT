@@ -56,6 +56,7 @@ class OfferController extends Controller
         /// Obtener el KDT y para llegar a su ID y así guardarloc on "courier_id" = id del courier
  
         $offer = Offer::create([
+  
             'price' => $httpRequest->price,
             'courier_id' => $kdt->id,
             'request_id' => $request->id,
