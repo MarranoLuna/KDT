@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/requests/available', [RequestController::class, 'availableForKdt']);
 
     Route::get('/requests/{request}/offers', [RequestController::class, 'showOffers']);
-    Route::post('/requests/{request}/offers', [OfferController::class, 'store']);
+    Route::post('/requests/{request}/make_offer', [OfferController::class, 'store']);
     Route::post('/requests/{request}/offers/{offer}/accept', [RequestController::class, 'acceptOffer']);
     Route::get('/addresses', [AddressController::class, 'index']);
     Route::post('/addresses', [AddressController::class, 'store']);
