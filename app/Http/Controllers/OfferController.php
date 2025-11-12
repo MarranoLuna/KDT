@@ -69,21 +69,19 @@ class OfferController extends Controller
 
     }
 
-    // --- ¡AQUÍ ESTÁ LA LÓGICA CORREGIDA! ---
-
-    // 1. Obtenemos el USUARIO logueado
+    
+    //  Obtenemos el USUARIO logueado
     $user = $httpRequest->user(); // o Auth::user()
 
-    // 2. Obtenemos su PERFIL de cadete usando la relación
-    // (Esto AHORA FUNCIONARÁ gracias al Arreglo 1)
+    //  Obtenemos su PERFIL de cadete usando la relación
     $kdt = $user->courier; 
 
-    // 3. ¡Guardia de seguridad!
+    //  seguridad
     if (!$kdt) {
         return response()->json(['message' => 'El usuario no es un cadete verificado.'], 403);
     }
 
-    // 4. Verificamos si ya ofertó (usando el ID del PERFIL)
+    //  Verificamos si ya ofertó (usando el ID del PERFIL)
     $existingOffer = Offer::where('courier_id', $kdt->id)
                             ->where('request_id', $request->id)
                             ->first(); 
@@ -92,10 +90,10 @@ class OfferController extends Controller
         return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
     }
 
-    // 5. Creamos la oferta (¡Ahora $kdt->id SÍ es el 'couriers.id'!)
+    //  Creamos la oferta (¡Ahora $kdt->id SÍ es el 'couriers.id'!)
     $offer = Offer::create([
         'price'      => $httpRequest->price, 
-        'courier_id' => $kdt->id, // <-- ¡Esto ahora es correcto!
+        'courier_id' => $kdt->id, 
         'request_id' => $request->id,    
     ]);
 
