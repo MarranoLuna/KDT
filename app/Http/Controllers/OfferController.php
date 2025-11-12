@@ -38,8 +38,35 @@ class OfferController extends Controller
         'price' => 'required|numeric|min:0',
     ]);
 
-    if ($validator->fails()) {
+ if ($validator->fails()) {
         return response()->json($validator->errors(), 422);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = Auth::user();
+
+        $kdt = Courier::where('user_id', $user->id)->first();
+
+        $existingOffer = Offer::where('courier_id', $kdt->id)
+            ->where('request_id', $request->id)
+            ->first();
+        if ($existingOffer) {
+            return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
+        }
+        
+        /// Obtener el KDT y para llegar a su ID y así guardarloc on "courier_id" = id del courier
+ 
+        $offer = Offer::create([
+  
+            'price' => $httpRequest->price,
+            'courier_id' => $kdt->id,
+            'request_id' => $request->id,
+        ]);
+        $request->update(['request_status_id' => 2]);
+        return response()->json($offer, 201);
+
     }
 
     // --- ¡AQUÍ ESTÁ LA LÓGICA CORREGIDA! ---
