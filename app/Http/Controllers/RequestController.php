@@ -167,7 +167,8 @@ class RequestController extends Controller
             ->with([
                 'originAddress',
                 'destinationAddress',
-                
+                'offers.courier', // Carga el perfil del cadete
+                'offers.courier.user',
                 'user',
                 'offers' => function ($query) use ($kdtId) {
                     $query->where('courier_id', $kdtId);
