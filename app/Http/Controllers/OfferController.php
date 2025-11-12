@@ -32,21 +32,18 @@ class OfferController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $httpRequest, RequestModel $request) 
-{
-    $validator = Validator::make($httpRequest->all(), [
-        'price' => 'required|numeric|min:0',
-    ]);
-
- if ($validator->fails()) {
-        return response()->json($validator->errors(), 422);
+    public function store(Request $httpRequest, RequestModel $request)
+    {
+        /*
+        $validator = Validator::make($httpRequest->all(), [
+            'price' => 'required|numeric|min:0',
+        ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
         $user = Auth::user();
-
         $kdt = Courier::where('user_id', $user->id)->first();
 
         $existingOffer = Offer::where('courier_id', $kdt->id)
@@ -55,51 +52,52 @@ class OfferController extends Controller
         if ($existingOffer) {
             return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
         }
-        
-        /// Obtener el KDT y para llegar a su ID y así guardarloc on "courier_id" = id del courier
- 
+
+        /// Obtener el KDT y para llegar a su ID y así guardarlo con "courier_id" = id del courier
+
         $offer = Offer::create([
-  
+
             'price' => $httpRequest->price,
             'courier_id' => $kdt->id,
             'request_id' => $request->id,
         ]);
         $request->update(['request_status_id' => 2]);
+        //return response()->json($offer, 201);
+
+        */
+
+
+        //  Obtenemos el USUARIO logueado
+        ///$user = $httpRequest->user(); // o Auth::user() //-> ya se declaró más arriba
+
+        //  Obtenemos su PERFIL de cadete usando la relación
+        $user = Auth::user();
+        $kdt = $user->courier;
+
+        //  seguridad
+        if (!$kdt) {
+            return response()->json(['message' => 'El usuario no es un cadete registrado.'], 403);
+        }
+
+        //  Verificamos si ya ofertó (usando el ID del PERFIL)
+        $existingOffer = Offer::where('courier_id', $kdt->id)
+            ->where('request_id', $request->id)
+            ->first();
+
+        if ($existingOffer) {
+            return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
+        }
+
+        //  Creamos la oferta (¡Ahora $kdt->id SÍ es el 'couriers.id'!)
+        $offer = Offer::create([
+            'price' => $httpRequest->price,
+            'courier_id' => $kdt->id,
+            'request_id' => $request->id,
+        ]);
+
+        $request->update(['request_status_id' => 2]);
         return response()->json($offer, 201);
-
     }
-
-    
-    //  Obtenemos el USUARIO logueado
-    $user = $httpRequest->user(); // o Auth::user()
-
-    //  Obtenemos su PERFIL de cadete usando la relación
-    $kdt = $user->courier; 
-
-    //  seguridad
-    if (!$kdt) {
-        return response()->json(['message' => 'El usuario no es un cadete verificado.'], 403);
-    }
-
-    //  Verificamos si ya ofertó (usando el ID del PERFIL)
-    $existingOffer = Offer::where('courier_id', $kdt->id)
-                            ->where('request_id', $request->id)
-                            ->first(); 
-
-    if ($existingOffer) {
-        return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
-    }
-
-    //  Creamos la oferta (¡Ahora $kdt->id SÍ es el 'couriers.id'!)
-    $offer = Offer::create([
-        'price'      => $httpRequest->price, 
-        'courier_id' => $kdt->id, 
-        'request_id' => $request->id,    
-    ]);
-
-    $request->update(['request_status_id' => 2]);
-    return response()->json($offer, 201);
-}
 
 
 
