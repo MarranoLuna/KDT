@@ -8,10 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Address; 
-use App\Models\Role; 
 
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
+use App\Models\Address;
+use App\Models\Role;
+use App\Models\Courier;
 
 
 
@@ -19,7 +22,7 @@ use App\Models\Role;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory,HasApiTokens, Notifiable;
+    use HasFactory, HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -32,6 +35,7 @@ class User extends Authenticatable
         'lastname',
         'password',
         'birthday',
+        'avatar',
     ];
 
     /**
@@ -49,6 +53,25 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+    public function getAvatarAttribute($value)
+    {
+        // Si el valor en la BD es null, devuelve null.
+        if (!$value) {
+            return null;
+        }
+
+        // Si el valor ya es una URL completa (http://...), devuélvelo tal cual.
+        if (Str::startsWith($value, 'http')) {
+            return $value;
+        }
+
+        // Si es un path relativo (ej: /storage/avatars/...),
+        // antepone la URL base de tu app (ej: https://miapi.com)
+        // 'URL::to($value)' hace esto automáticamente.
+        return URL::to($value);
+    }
+
     protected function casts(): array
     {
         return [
@@ -63,21 +86,21 @@ class User extends Authenticatable
     }
     public function admin()
     {
-    return $this->hasOne(Admin::class);
+        return $this->hasOne(Admin::class);
     }
 
-     public function requests()
+    public function requests()
     {
         return $this->hasMany(Request::class);
     }
 
-     public function courier()
+    public function courier()
     {
         return $this->hasOne(Courier::class);
     }
 
     public function role()
-{
-    return $this->belongsTo(Role::class);
-}
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

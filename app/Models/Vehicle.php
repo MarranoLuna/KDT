@@ -20,6 +20,7 @@ class Vehicle extends Model
         'color',
         'registration_plate',
         'is_validated',
+        'is_selected',
         'vehicle_type_id',
         'motorcycle_brand_id',
         'bicycle_brand_id',
@@ -38,7 +39,7 @@ class Vehicle extends Model
 
     public function vehicleType()
     {
-        return $this->hasOne('App\VehicleType');
+        return $this->belongsTo(VehicleType::class);
     }
 
     public function documents()
@@ -46,10 +47,6 @@ class Vehicle extends Model
     return $this->hasMany(VehicleDoc::class);
     }
 
-    public function type()
-    {
-    return $this->belongsTo(VehicleType::class,'vehicle_type_id');
-    }
 
     public function courier()
     {

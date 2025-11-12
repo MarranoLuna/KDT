@@ -8,6 +8,7 @@ use App\Models\Request;
 use App\Models\Courier;
 use App\Models\User;
 
+
 class Offer extends Model
 {
     use HasFactory;
@@ -21,7 +22,7 @@ class Offer extends Model
     // Relación con Courier
     public function courier()
     {
-        return $this->belongsTo(User::class, 'courier_id');
+        return $this->belongsTo(Courier::class, 'courier_id');
     }
 
 

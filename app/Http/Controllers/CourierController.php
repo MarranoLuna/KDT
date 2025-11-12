@@ -24,48 +24,48 @@ class CourierController extends Controller
 
     private function saveBase64Image($base64String, $folder, $fileNamePrefix)
     {
-    // 1. Limpiar el string base64
-    // El string viene con "data:image/jpeg;base64," al inicio. Hay que quitarlo.
+    //  limpia el string base64
+    // el string viene con "data:image/jpeg;base64," al inicio. Hay que quitarlo.
     @list($type, $data) = explode(';', $base64String);
     @list(, $data)      = explode(',', $data);
     
-    // Si no tiene ese formato, puede que venga limpio
+    // si no tiene ese formato, puede que venga limpio
     if (!$data) {
         $data = $base64String;
     }
 
-    // 2. Decodificar el string
+    // decodificar el string
     $imageData = base64_decode($data);
     
     if ($imageData === false) {
         throw new \Exception('Error al decodificar la imagen base64.');
     }
 
-    // 3. Generar un nombre único y la extensión
+    // generar un nombre único y la extensión
     $extension = explode('/', explode(':', $type)[1])[1] ?? 'jpg'; // Extrae 'jpeg' o 'png'
     $fileName = $fileNamePrefix . '_' . Str::random(10) . '.' . $extension;
     
-    // 4. Definir la ruta de guardado (privada)
+    // definir la ruta de guardado (privada)
     $path = $folder . '/' . $fileName;
 
-    // 5. Guardar el archivo en el disco 'storage/app/dni'
+    // guardar el archivo en el disco 'storage/app/dni'
     Storage::disk('local')->put($path, $imageData);
 
-    // 6. Devolver solo la ruta relativa para guardarla en la BD
+    // devolver solo la ruta relativa para guardarla en la BD
     return $path;
 }
 
 
 public function courierRegistration(Request $request)
     {
-        // 1. Validar los datos 
+        //  Validar los datos 
     $validatedData = $request->validate([
         'dni' => 'required|string|max:8', 
         'dni_frente_base64' => 'required|string',
         'dni_dorso_base64' => 'required|string',
     ]);
 
-    // 2. Obtener el usuario 
+    //  Obtener el usuario 
     /** @var \App\Models\User $user */
     $user = Auth::user();
 
@@ -74,7 +74,7 @@ public function courierRegistration(Request $request)
         }
 
         try {
-            // 3. Guardar las imágenes 
+            //  Guardar las imágenes 
             $pathFrente = $this->saveBase64Image(
                 $request->dni_frente_base64, 
                 'dni_images', 
@@ -87,7 +87,7 @@ public function courierRegistration(Request $request)
                 'user_' . $user->id . '_dorso'
             );
 
-            // 4. Lógica de Creación/Actualización 
+            // Lógica de Creación/Actualización 
             $courier = Courier::updateOrCreate(
                 ['user_id' => $user->id], // Busca por este campo
                 [ 
@@ -103,7 +103,7 @@ public function courierRegistration(Request $request)
                 ]
             );
 
-            // 5. Devolver respuesta 
+            //  Devolver respuesta 
             return response()->json([
                 'message' => 'Solicitud enviada, pendiente de validación.',
                 'courier' => $courier
@@ -166,8 +166,9 @@ public function courierRegistration(Request $request)
                 'offer.request',
                 'offer.request.user',
                 'offer.request.originAddress', 
-                'offer.request.destinationAddress'
-            ])
+                'offer.request.destinationAddress',
+                'offer.courier.user'
+                ])
             ->first(); // Devuelve el primer pedido que encuentra (o null)
 
         //  orden 
@@ -240,7 +241,7 @@ public function courierRegistration(Request $request)
             return response()->json(['total_earnings' => 0, 'completed_orders' => []]); 
         }
 
-        // lee el filtro de la URL (?filter=...). Si no viene, usa 'total'
+        // filtro de la URL (?filter=...). Si no viene, usa 'total'
         $filter = $request->query('filter', 'total');
 
         // consulta 
@@ -249,9 +250,10 @@ public function courierRegistration(Request $request)
                 $query->where('courier_id', $user->id); 
             });
 
-        // filtro de fecha
+        // filtro
         if ($filter === 'today') {
-            
+            // Si el filtro es 'today', añade una condición extra:
+            // donde la fecha sea HOY.
             $query->whereDate('updated_at', Carbon::today());
         }
         
@@ -262,16 +264,18 @@ public function courierRegistration(Request $request)
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        // cálculo
+        // calcula el total
         $totalEarnings = $completedOrders->sum(function ($order) {
             return $order->offer->price; 
         });
 
+      
         return response()->json([
             'total_earnings' => $totalEarnings,
             'completed_orders' => $completedOrders
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
