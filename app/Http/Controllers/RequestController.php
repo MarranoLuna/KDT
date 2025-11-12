@@ -195,7 +195,7 @@ class RequestController extends Controller
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        $offers = $request->offers()->with('courier')->get();
+        $offers = $request->offers()->with('courier', 'courier.user')->get();
         return response()->json($offers);
     }
 
