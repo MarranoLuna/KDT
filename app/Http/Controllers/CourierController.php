@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use Carbon\Carbon;
 
 
 class CourierController extends Controller
@@ -230,6 +231,46 @@ public function courierRegistration(Request $request)
 
 
         return response()->json($historyOrders);
+    }
+
+    public function getEarnings(Request $request)
+    {
+        $user = $request->user(); 
+        if (!$user->courier) { 
+            return response()->json(['total_earnings' => 0, 'completed_orders' => []]); 
+        }
+
+        // lee el filtro de la URL (?filter=...). Si no viene, usa 'total'
+        $filter = $request->query('filter', 'total');
+
+        // consulta 
+        $query = Order::where('is_completed', true)
+            ->whereHas('offer', function ($query) use ($user) {
+                $query->where('courier_id', $user->id); 
+            });
+
+        // filtro de fecha
+        if ($filter === 'today') {
+            
+            $query->whereDate('updated_at', Carbon::today());
+        }
+        
+        $completedOrders = $query->with([ 
+                'offer:id,price,request_id',
+                'offer.request:id,title' 
+            ])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        // cálculo
+        $totalEarnings = $completedOrders->sum(function ($order) {
+            return $order->offer->price; 
+        });
+
+        return response()->json([
+            'total_earnings' => $totalEarnings,
+            'completed_orders' => $completedOrders
+        ]);
     }
 
     /**
