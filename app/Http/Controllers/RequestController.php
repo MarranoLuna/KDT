@@ -10,10 +10,12 @@ use App\Models\Address;
 use App\Models\Request as RequestModel;
 use App\Models\Offer;
 use App\Models\Order;
+
 use App\Models\OrderStatus;
 use App\Models\RequestStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+
 
 class RequestController extends Controller
 {
@@ -59,7 +61,7 @@ class RequestController extends Controller
             $originAddress = $this->findOrCreateAddress($data, 'origin', $user->id);
             $destinationAddress = $this->findOrCreateAddress($data, 'destination', $user->id);
 
-            ////----------------- LAS PARADAS NO ESTÁN DISEÑADAS EN LA BASE DE DATOS -----------------////
+            ////----------------- LAS PARADAS NO ESTÁN IMPLEMENTADAS EN LA BASE DE DATOS -----------------////
             /*
                 $stopAddress = null;
                 if (!empty($data['stop_address'])) {
@@ -162,25 +164,29 @@ class RequestController extends Controller
 
     public function availableForKdt() // para que kdt vea todas las solicitudes
     {
-        $kdtId = Auth::id();
+        $user = Auth::user();
+        $kdt = $user->courier;
 
         $requests = RequestModel::whereIn('request_status_id', [1, 2])
             ->with([
                 'originAddress',
                 'destinationAddress',
+                'offers' => function ($query) use ($kdt) {
+                    $query->where('courier_id', $kdt->id);
+                },
+                'offers.courier', // Carga el perfil del cadete
+                //'offers.courier.user', //carga el usuario del cadete   /// -> Esta parte da error
+                'user', // el cliente que hizo la request
                 
-                'user',
-                'offers' => function ($query) use ($kdtId) {
-                    $query->where('courier_id', $kdtId);
-                }
             ])
-            ->latest()
-            ->get();
+            ->latest()->get();
+
         $requests->each(function ($request) {
             $request->has_offered = $request->offers->isNotEmpty();
         });
 
         return response()->json($requests);
+
     }
 
     public function showOffers(RequestModel $request)
@@ -233,8 +239,8 @@ class RequestController extends Controller
     public function getAvailableCount()
     {
         $count = RequestModel::whereIn('request_status_id', [1, 2])->count();
-        
+
         return response()->json(['available_count' => $count]);
     }
-   
+
 }

@@ -67,7 +67,8 @@ class OrderController extends Controller
             'offer.request',
             'offer.request.user',
             'offer.request.originAddress',
-            'offer.request.destinationAddress'
+            'offer.request.destinationAddress',
+            'offer.courier.user'
         ]);
 
         return response()->json($orderData);

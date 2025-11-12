@@ -8,6 +8,7 @@ use App\Models\Request;
 use App\Models\Courier;
 use App\Models\User;
 
+
 class Offer extends Model
 {
     use HasFactory;
