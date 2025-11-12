@@ -55,7 +55,7 @@ class RequestController extends Controller
             $originAddress = $this->findOrCreateAddress($data, 'origin', $user->id);
             $destinationAddress = $this->findOrCreateAddress($data, 'destination', $user->id);
 
-            ////----------------- LAS PARADAS NO ESTÁN DISEÑADAS EN LA BASE DE DATOS -----------------////
+            ////----------------- LAS PARADAS NO ESTÁN IMPLEMENTADAS EN LA BASE DE DATOS -----------------////
             /*
                 $stopAddress = null;
                 if (!empty($data['stop_address'])) {
@@ -181,29 +181,6 @@ class RequestController extends Controller
 
         return response()->json($requests);
 
-        /*
-        $kdtId = Auth::id();
-
-        $requests = RequestModel::whereIn('request_status_id', [1, 2])
-            ->with([
-                'originAddress',
-                'destinationAddress',
-                'offers.courier', // Carga el perfil del cadete
-                'offers.courier.user',
-                'user',
-                'offers' => function ($query) use ($kdtId) {
-                    $query->where('courier_id', $kdtId);
-                }
-            ])
-            ->latest()
-            ->get();
-
-        $requests->each(function ($request) {
-            $request->has_offered = $request->offers->isNotEmpty();
-        });
-
-        return response()->json($requests);
-        */
     }
 
     public function showOffers(RequestModel $request)
