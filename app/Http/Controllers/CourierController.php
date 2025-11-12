@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use Carbon\Carbon;
 
 
 class CourierController extends Controller
@@ -239,27 +240,42 @@ public function courierRegistration(Request $request)
         if (!$user->courier) { 
             return response()->json(['total_earnings' => 0, 'completed_orders' => []]); 
         }
-        $completedOrders = Order::where('is_completed', true) // solo completados que pertenezcan a una oferta de ESTE cadet
+
+        // filtro de la URL (?filter=...). Si no viene, usa 'total'
+        $filter = $request->query('filter', 'total');
+
+        // consulta 
+        $query = Order::where('is_completed', true)
             ->whereHas('offer', function ($query) use ($user) {
                 $query->where('courier_id', $user->id); 
-            })
-            ->with([ 
-                'offer:id,price,request_id', 
+            });
+
+        // filtro
+        if ($filter === 'today') {
+            // Si el filtro es 'today', añade una condición extra:
+            // donde la fecha sea HOY.
+            $query->whereDate('updated_at', Carbon::today());
+        }
+        
+        $completedOrders = $query->with([ 
+                'offer:id,price,request_id',
                 'offer.request:id,title' 
             ])
-            ->orderBy('updated_at', 'desc') 
+            ->orderBy('updated_at', 'desc')
             ->get();
 
-        // Calculamos el total 
+        // calcula el total
         $totalEarnings = $completedOrders->sum(function ($order) {
-            return $order->offer->price; // suma la propiedad 'price' de cada oferta
+            return $order->offer->price; 
         });
 
+      
         return response()->json([
             'total_earnings' => $totalEarnings,
             'completed_orders' => $completedOrders
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
