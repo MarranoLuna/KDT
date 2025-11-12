@@ -11,6 +11,12 @@ use App\Models\Request as RequestModel;
 use App\Models\Offer;
 use App\Models\Order;
 
+use App\Models\OrderStatus;
+use App\Models\RequestStatus;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+
 class RequestController extends Controller
 {
     public function index()
