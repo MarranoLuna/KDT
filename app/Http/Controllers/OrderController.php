@@ -31,11 +31,17 @@ class OrderController extends Controller
     public function completeOrder(Request $request, Order $order)
     {
         $user = $request->user();
+        $courierProfile = $user->courier; // <obtenemos el PERFIL del cadete
+
+
+        if (!$courierProfile) {
+            return response()->json(['message' => 'Usuario no es un cadete'], 403);
+        }
         
         $order->load('offer'); 
 
-        
-        if ($order->offer->courier_id !== $user->id) {
+        // comparamos ID de Perfil con ID de Perfil
+        if ($order->offer->courier_id !== $courierProfile->id) {
             return response()->json(['message' => 'No autorizado para esta acción'], 403);
         }
 
@@ -49,26 +55,31 @@ class OrderController extends Controller
         return response()->json(['message' => '¡Pedido completado exitosamente!']);
     }
 
+   
     public function getDetails(Request $request, Order $order)
     {
         $user = $request->user(); 
+        $courierProfile = $user->courier; // obtenemos el PERFIL del cadete
 
-        
+
+        if (!$courierProfile) {
+            return response()->json(['message' => 'Usuario no es un cadete'], 403);
+        }
+
         $order->load('offer');
 
-        
-        if ($order->offer->courier_id !== $user->id) { 
+        // comparamos ID de Perfil con ID de Perfil
+        if ($order->offer->courier_id !== $courierProfile->id) { 
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        
+       
         $orderData = $order->load([
             'status',
             'offer.request',
             'offer.request.user',
             'offer.request.originAddress',
-            'offer.request.destinationAddress',
-            'offer.courier.user'
+            'offer.request.destinationAddress'
         ]);
 
         return response()->json($orderData);

@@ -151,14 +151,21 @@ public function courierRegistration(Request $request)
 
     public function getActiveOrder(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user(); 
 
-        // busca una orden...
-        $activeOrder = Order::where('is_completed', false) // ...que no esté completada
-            ->whereHas('offer', function ($query) use ($user) {
-                
-                //  ...donde la 'courier_id' de la oferta coincida con el ID del USUARIO logueado.
-                $query->where('courier_id', $user->id); 
+        // obtenemos su PERFIL de cadete (¡crucial!)
+        $courierProfile = $user->courier; 
+
+        // si no tiene perfil de cadete, no puede tener pedidos.
+        if (!$courierProfile) {
+             return response(null, 204);
+        }
+
+        $activeOrder = Order::where('is_completed', false) 
+            ->whereHas('offer', function ($query) use ($courierProfile) {
+        
+                //    con el ID del PERFIL de cadete.
+                $query->where('courier_id', $courierProfile->id); 
             })
             ->with([ 
                 'status',
@@ -166,16 +173,13 @@ public function courierRegistration(Request $request)
                 'offer.request',
                 'offer.request.user',
                 'offer.request.originAddress', 
-                'offer.request.destinationAddress',
-                'offer.courier.user'
-                ])
-            ->first(); // Devuelve el primer pedido que encuentra (o null)
+                'offer.request.destinationAddress'
+            ])
+            ->first(); 
 
-        //  orden 
         if ($activeOrder) {
             return response()->json($activeOrder);
         }
-        
 
         return response(null, 204);
     }
