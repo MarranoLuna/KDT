@@ -43,12 +43,12 @@ class OrderController extends Controller
 
     $statusCompletada = OrderStatus::where('name', 'completada')->firstOrFail();
 
-    // --- ¡ESTA ES LA CORRECCIÓN! ---
+
     // Asignamos las propiedades una por una
     $order->order_status_id = $statusCompletada->id;
     $order->is_completed = true;
 
-    // Y AHORA usamos ->save()
+   
     // save() SÍ actualiza el 'updated_at' timestamp automáticamente.
     $order->save();
 
