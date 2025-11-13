@@ -62,9 +62,9 @@ class VehicleController extends Controller
 
     public function index()
     {
-        $id = Auth::id();
+        $id_kdt = Auth::user()->courier->id;
 
-        $vehicles = Vehicle::where('courier_id', $id)
+        $vehicles = Vehicle::where('courier_id', $id_kdt)
             ->with([
                 'vehicleType',
                 'bicycleBrand',
@@ -124,10 +124,10 @@ class VehicleController extends Controller
                 'vehicle_id' => 'required|integer|exists:vehicles,id'
             ]);
             $vehicle_id = $request->input('vehicle_id');
-            $user_id = Auth::id();
+            $courier_id = Auth::user()->courier->id;
 
             $vehicle = Vehicle::where('id', $vehicle_id)
-                ->where('courier_id', $user_id)
+                ->where('courier_id', $courier_id)
                 ->first();
 
             if (!$vehicle) {
@@ -151,8 +151,8 @@ class VehicleController extends Controller
             ]);
 
             $vehicle_id = $request->input('vehicle_id');
-            $user_id = Auth::id();
-            $vehicles = Vehicle::where('courier_id', $user_id)->get();
+            $courier_id = Auth::user()->courier->id;
+            $vehicles = Vehicle::where('courier_id', $courier_id)->get();
             foreach ($vehicles as $v) {
                 $v["is_selected"] = false;
                 $v->save();
