@@ -241,26 +241,31 @@ public function courierRegistration(Request $request)
     public function getEarnings(Request $request)
     {
         $user = $request->user(); 
-        if (!$user->courier) { 
+        $courierProfile = $user->courier; 
+        if (!$courierProfile) { 
             return response()->json(['total_earnings' => 0, 'completed_orders' => []]); 
         }
 
-        // filtro de la URL (?filter=...). Si no viene, usa 'total'
         $filter = $request->query('filter', 'total');
 
-        // consulta 
-        $query = Order::where('is_completed', true)
-            ->whereHas('offer', function ($query) use ($user) {
-                $query->where('courier_id', $user->id); 
+   
+        $statusCompletada = OrderStatus::where('name', 'completada')->first(); 
+
+    
+        if (!$statusCompletada) {
+            return response()->json(['message' => 'Error de servidor: No se encontró el estado "completada" en la BD.'], 500);
+        }
+      
+
+        $query = Order::where('order_status_id', $statusCompletada->id)
+            ->whereHas('offer', function ($query) use ($courierProfile) {
+                $query->where('courier_id', $courierProfile->id); 
             });
 
-        // filtro
         if ($filter === 'today') {
-            // Si el filtro es 'today', añade una condición extra:
-            // donde la fecha sea HOY.
-            $query->whereDate('updated_at', Carbon::today());
+            $query->whereToday('updated_at'); 
         }
-        
+
         $completedOrders = $query->with([ 
                 'offer:id,price,request_id',
                 'offer.request:id,title' 
@@ -268,12 +273,10 @@ public function courierRegistration(Request $request)
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        // calcula el total
         $totalEarnings = $completedOrders->sum(function ($order) {
             return $order->offer->price; 
         });
 
-      
         return response()->json([
             'total_earnings' => $totalEarnings,
             'completed_orders' => $completedOrders
