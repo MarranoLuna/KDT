@@ -34,7 +34,7 @@ class OfferController extends Controller
      */
     public function store(Request $httpRequest, RequestModel $request)
     {
-        /*
+        
         $validator = Validator::make($httpRequest->all(), [
             'price' => 'required|numeric|min:0',
         ]);
@@ -44,11 +44,18 @@ class OfferController extends Controller
         }
 
         $user = Auth::user();
-        $kdt = Courier::where('user_id', $user->id)->first();
+        $kdt = $user->courier;
+        
+        if (!$kdt) {
+        return response()->json([
+            'message' => 'El usuario no es un cadete verificado o falta la relación en el Modelo User.'
+        ], 403); // 403 Forbidden es mejor que 500
+    }
 
         $existingOffer = Offer::where('courier_id', $kdt->id)
             ->where('request_id', $request->id)
             ->first();
+
         if ($existingOffer) {
             return response()->json(['message' => 'Ya has enviado una oferta para esta solicitud.'], 409);
         }
@@ -62,9 +69,9 @@ class OfferController extends Controller
             'request_id' => $request->id,
         ]);
         $request->update(['request_status_id' => 2]);
-        //return response()->json($offer, 201);
+        return response()->json($offer, 201);
 
-        */
+        
 
 
         //  Obtenemos el USUARIO logueado

@@ -29,31 +29,31 @@ class OrderController extends Controller
     }
 
     public function completeOrder(Request $request, Order $order)
-    {
-        $user = $request->user();
-        $courierProfile = $user->courier; // <obtenemos el PERFIL del cadete
-
-
-        if (!$courierProfile) {
-            return response()->json(['message' => 'Usuario no es un cadete'], 403);
-        }
-        
-        $order->load('offer'); 
-
-        // comparamos ID de Perfil con ID de Perfil
-        if ($order->offer->courier_id !== $courierProfile->id) {
-            return response()->json(['message' => 'No autorizado para esta acción'], 403);
-        }
-
-        $statusCompletada = OrderStatus::where('name', 'completada')->firstOrFail();
-        
-        $order->update([
-            'order_status_id' => $statusCompletada->id,
-            'is_completed' => true
-        ]);
-
-        return response()->json(['message' => '¡Pedido completado exitosamente!']);
+{
+    $user = $request->user();
+    $courierProfile = $user->courier; 
+    if (!$courierProfile) {
+        return response()->json(['message' => 'Usuario no es un cadete'], 403);
     }
+
+    $order->load('offer'); 
+    if ($order->offer->courier_id !== $courierProfile->id) {
+        return response()->json(['message' => 'No autorizado para esta acción'], 403);
+    }
+
+    $statusCompletada = OrderStatus::where('name', 'completada')->firstOrFail();
+
+
+    // Asignamos las propiedades una por una
+    $order->order_status_id = $statusCompletada->id;
+    $order->is_completed = true;
+
+   
+    // save() SÍ actualiza el 'updated_at' timestamp automáticamente.
+    $order->save();
+
+    return response()->json(['message' => '¡Pedido completado exitosamente!']);
+}
 
    
     public function getDetails(Request $request, Order $order)
