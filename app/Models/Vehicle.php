@@ -50,7 +50,7 @@ class Vehicle extends Model
 
     public function courier()
     {
-    return $this->hasOne(Courier::class);
+    return $this->belongsTo(Courier::class);
     }
     
 }
