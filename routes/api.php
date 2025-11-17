@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
@@ -57,22 +57,28 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/vehicles/register-bicycle', [VehicleController::class, 'storeBicycle']);
     Route::post('/vehicles/register-motorcycle', [VehicleController::class, 'storeMotorcycle']);
-    Route::get("/vehicles", action:[VehicleController::class,"index"]);
-    Route::post("/change_vehicle", [VehicleController::class,"changeVehicle"]);
-    Route::post("/delete_vehicle", [VehicleController::class,"destroy"]);
-
+    Route::get("/vehicles", action: [VehicleController::class, "index"]);
+    Route::post("/change_vehicle", [VehicleController::class, "changeVehicle"]);
+    Route::post("/delete_vehicle", [VehicleController::class, "destroy"]);
 
     Route::resource('users', UserController::class)->only([
-        'show',   
-        'update'  
+        'show',
+        'update'
     ]);
-    
+
+
+
 });
 
+Route::get('/dni/{filename}', [CourierController::class, 'dni']);
+    //->middleware('admin');
+Route::post('/courier/validate', [CourierController::class, 'validate']);
+Route::post('/courier/reject', [CourierController::class, 'reject']);
+    //->middleware('admin');
 
 // Ruta para obtener los datos de un usuario por su ID
 Route::get('/users/{user}', [UserController::class, 'show']);
 
 // Ruta para actualizar los datos de un usuario por su ID
-Route::put('/users/{user}', [UserController::class, 'update']); 
+Route::put('/users/{user}', [UserController::class, 'update']);
 

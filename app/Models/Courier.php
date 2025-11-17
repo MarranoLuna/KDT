@@ -36,9 +36,9 @@ class Courier extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function vehicle()
+    public function vehicles()
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->hasMany(Vehicle::class);
     }
 
 
