@@ -58,7 +58,6 @@ class CourierController extends Controller
     public function dni($fileName)
     {
         $path = "dni_images/{$fileName}";
-
         if (!Storage::exists($path)) {
             abort(404);
         }
