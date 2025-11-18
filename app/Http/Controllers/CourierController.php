@@ -229,32 +229,35 @@ class CourierController extends Controller
     }
 
     public function getOrderHistory(Request $request)
-    {
-        $user = $request->user();
-        if (!$user->courier) {
-            return response()->json([]);
-        } // Seguridad
-
-        // busca todas las órdenes del kdt
-        $historyOrders = Order::where('is_completed', true)
-            ->whereHas('offer', function ($query) use ($user) {
-
-                $query->where('courier_id', $user->id);
-            })
-            ->with([
-                'status',
-                'offer',
-                'offer.request',
-                'offer.request.user',
-                'offer.request.originAddress',
-                'offer.request.destinationAddress'
-            ])
-            ->orderBy('updated_at', 'desc')
-            ->get();
-
-
-        return response()->json($historyOrders);
+{
+    $user = $request->user();
+    
+    $courierProfile = $user->courier; 
+    
+    if (!$courierProfile) { 
+        return response()->json([]); 
     }
+
+    $historyOrders = Order::where('is_completed', true)
+        ->whereHas('offer', function ($query) use ($courierProfile) { 
+            
+       
+            $query->where('courier_id', $courierProfile->id); 
+        })
+        ->with([
+            'status',
+            'offer',
+            'offer.request',
+            'offer.request.user',
+            'offer.request.originAddress',
+            'offer.request.destinationAddress'
+        ])
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+
+    return response()->json($historyOrders);
+}
 
     public function getEarnings(Request $request)
     {
