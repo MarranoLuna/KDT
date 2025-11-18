@@ -174,12 +174,23 @@ class RequestController extends Controller
                 'offers' => function ($query) use ($kdt) {
                     $query->where('courier_id', $kdt->id);
                 },
-                'offers.courier', // Carga el perfil del cadete
-                //'offers.courier.user', //carga el usuario del cadete   /// -> Esta parte da error
-                'user', // el cliente que hizo la request
-                
+                'offers.courier',
+                'user',
             ])
-            ->latest()->get();
+            ->orderByRaw("
+                    CASE 
+                        WHEN NOT EXISTS (
+                            SELECT 1 
+                            FROM offers 
+                            WHERE offers.request_id = requests.id 
+                            AND offers.courier_id = ?
+                        ) THEN 0
+                        ELSE 1
+                    END ASC
+                ", [$kdt->id])
+            ->latest()
+            ->get();
+
 
         $requests->each(function ($request) {
             $request->has_offered = $request->offers->isNotEmpty();
