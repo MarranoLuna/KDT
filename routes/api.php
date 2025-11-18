@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -15,7 +14,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\VehicleController;
 
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+
 Route::post('/ion_login', [AuthenticatedSessionController::class, 'ion_store']);
 
 Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -66,15 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
         'update'
     ]);
 
-
-
 });
 
-Route::get('/dni/{filename}', [CourierController::class, 'dni']);
-    //->middleware('admin');
-Route::post('/courier/validate', [CourierController::class, 'validate']);
-Route::post('/courier/reject', [CourierController::class, 'reject']);
-    //->middleware('admin');
 
 // Ruta para obtener los datos de un usuario por su ID
 Route::get('/users/{user}', [UserController::class, 'show']);

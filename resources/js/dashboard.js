@@ -89,12 +89,13 @@ async function validate_courier(dataset) {
     });
     if (result.isConfirmed) {
         try {
-            const response = await fetch(`api/courier/validate`, {
+            const response = await fetch(`courier/validate`, {
                 method: 'post',
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
                     id: datos.id
@@ -114,7 +115,7 @@ async function validate_courier(dataset) {
                     title: 'Éxito',
                     text: data.message,
                     timer: 1000,
-                    willClose:()=>{
+                    willClose: () => {
                         location.reload();
                     }
                 });
@@ -140,7 +141,7 @@ async function reject_courier(dataset) {
     console.log("Función de RECHAZAR CADETE");
     console.log(dataset)
     ///const datos = JSON.parse(dataset.docs);
-    
+
     const datos = await JSON.parse(dataset.courier);
     const result = await Swal.fire({
         title: "Rechazar cadete",
@@ -153,12 +154,13 @@ async function reject_courier(dataset) {
     });
     if (result.isConfirmed) {
         try {
-            const response = await fetch(`api/courier/reject`, {
+            const response = await fetch(`courier/reject`, {
                 method: 'post',
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
                     id: datos.id
@@ -178,8 +180,8 @@ async function reject_courier(dataset) {
                     title: 'Éxito',
                     text: data.message,
                     timer: 1000,
-                    showConfirmButton:false,
-                    willClose:()=>{
+                    showConfirmButton: false,
+                    willClose: () => {
                         location.reload();
                     }
                 });
@@ -192,7 +194,6 @@ async function reject_courier(dataset) {
                 icon: 'error',
                 title: 'Error',
                 text: error.message,
-                showConfirmButton:false,
                 timer: 1000
             });
         }
@@ -202,8 +203,15 @@ async function reject_courier(dataset) {
 }
 
 async function getDniImageAsUrl(fileName) {
-    const response = await fetch(`api/dni/${fileName}`, { method: 'GET', credentials: 'include' });
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    return url;
+    try {
+        const response = await fetch(`/dni/${fileName}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        return url;
+    } catch(error){
+        console.log(error)
+    }
 }
