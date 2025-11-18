@@ -308,6 +308,9 @@ class CourierController extends Controller
             $id = $request->id;
             $courier = Courier::find($id);
             $courier->is_validated = true;
+            $user = $courier->user;
+            $user->role_id = 2;
+            $user->save();
             $courier->save();
             //  Devolver respuesta 
             return response()->json([
